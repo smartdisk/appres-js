@@ -53,10 +53,10 @@
         if(window.AppString) {
             element.innerText = appString(context, element) || element.innerText;
         } else {
-            if(retry>3) return;
+            if(retry>5) return;
             setTimeout(function(){
                 appStringTimer(context, element, retry++);
-            }, 100);
+            }, 50);
         }
     };
 
