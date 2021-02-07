@@ -21,7 +21,8 @@
         skey: "default",
         lang: "ja-JP",
         retry: 50,
-        time: 25 
+        time: 25,
+        cache: true
     },
     loadScript = function (window, url, callback) {
         var script = window.document.createElement("script");
@@ -124,6 +125,7 @@
             if(_options.lang) options.lang = _options.lang;
             if(_options.retry!=null) options.retry = _options.retry;
             if(_options.time!=null) options.time = _options.time;
+            if(_options.cache!=null) options.cache = _options.cache;
         }
         window.customElements.define('app-res', class extends HTMLElement {
             constructor() {
@@ -144,28 +146,31 @@
           "&skey=" + options.skey + 
           "&lang=" + options.lang;
 
-        if(!equalItem(appWindow, "app-res-url", appresurl)) {
+        if(options.cache && !equalItem(appWindow, "app-res-url", appresurl)) {
           clearItems(appWindow);
         }
 
-        var appres_appstring = getItem(appWindow, "app-res-appstring");
-        if(appres_appstring) {
-          try {
-            var appstring_json = JSON.parse(appres_appstring);
-            var key_count  = Object.keys(appstring_json).length;
-            if(key_count>0) {
-              appWindow.AppString = appstring_json;
-              appres_appstring = true;
-            } else {
-              appres_appstring = false;  
-            }
-          } catch (e) {
-            clearItems(appWindow);
-            appres_appstring = null;
-          }          
+        var appres_appstring = null;
+        if(options.cache) {
+          appres_appstring = getItem(appWindow, "app-res-appstring");
+          if(appres_appstring) {
+            try {
+              var appstring_json = JSON.parse(appres_appstring);
+              var key_count  = Object.keys(appstring_json).length;
+              if(key_count>0) {
+                appWindow.AppString = appstring_json;
+                appres_appstring = true;
+              } else {
+                appres_appstring = false;  
+              }
+            } catch (e) {
+              clearItems(appWindow);
+              appres_appstring = null;
+            }          
+          }  
         }
 
-        if(appres_appstring==true) {
+        if(options.cache && appres_appstring==true) {
           console.log("AppRes: Loaded app string from localstorage");
           if(appWindow.onLoadedAppRes) {
             appWindow.onLoadedAppRes();
@@ -173,11 +178,13 @@
         } else {
           loadScript(window, appresurl, 
             function() {
+              if(options.cache) {
                 setItem(appWindow, "app-res-url", appresurl);
-                setItem(appWindow, "app-res-appstring", JSON.stringify(window.AppString));
-                if(appWindow.onLoadedAppRes) {
-                    appWindow.onLoadedAppRes();
-                }
+                setItem(appWindow, "app-res-appstring", JSON.stringify(window.AppString));  
+              }
+              if(appWindow.onLoadedAppRes) {
+                  appWindow.onLoadedAppRes();
+              }
             }
           );  
         }    
