@@ -21,7 +21,7 @@
         skey: "default",
         lang: "ja-JP",
         retry: 5,
-        time: 50 
+        time: 10 
     },
     loadScript = function (window, url, callback) {
         var script = window.document.createElement("script");
