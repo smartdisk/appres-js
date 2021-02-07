@@ -138,7 +138,7 @@
             "&lang=" + options.lang, 
             function() {
                 console.log("onLoaded appres.js");
-                console.log(window.AppString);
+                console.log("AppString:" + window.AppString);
 
                 setItem(appWindow, "app-res", window.AppString);
 
