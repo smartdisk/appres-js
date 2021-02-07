@@ -102,8 +102,10 @@
           window.localStorage.removeItem( k + '::' + i );
         }
         window.localStorage.removeItem(k);
+    },
+    clearItems = function ( window ) {
+        window.localStorage.clear();
     }
-
     var appWindow = window;
     var AppRes = function( window, _options ) {
         appWindow = window;
@@ -127,21 +129,19 @@
                 appStringTimer(context, element, 0);
               }, 0);
             }
-        });      
-        loadScript(window, 
-            options.host + 
-            "?pkey=" + options.pkey + 
-            "&akey=" + options.akey + 
-            "&cmd=" + options.cmd + 
-            "&target=" + options.target + 
-            "&skey=" + options.skey + 
-            "&lang=" + options.lang, 
+        });
+        var appresurl = options.host + 
+          "?pkey=" + options.pkey + 
+          "&akey=" + options.akey + 
+          "&cmd=" + options.cmd + 
+          "&target=" + options.target + 
+          "&skey=" + options.skey + 
+          "&lang=" + options.lang;
+        loadScript(window, appresurl, 
             function() {
-                console.log("onLoaded appres.js");
-                console.log("localStorage.remainingSpace " + localStorage.remainingSpace);                
-                console.log("AppString:" + JSON.stringify(window.AppString));
-                setItem(appWindow, "app-res", JSON.stringify(window.AppString));
-
+                clearItems();
+                setItem(appWindow, "app-res-url", appresurl);
+                setItem(appWindow, "app-res-appstring", JSON.stringify(window.AppString));
                 if(appWindow.onLoadedAppRes) {
                     appWindow.onLoadedAppRes();
                 }
