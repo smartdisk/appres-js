@@ -21,10 +21,15 @@
         skey: "default",
         lang: "ja-JP"    
     },
-    loadScript = function (window, url) {
+    loadScript = function (window, url, callback) {
         var script = window.document.createElement("script");
+        script.type = 'text/javascript'; 
+        // IE에서는 onreadystatechange를 사용 
+        script.onload = function () { 
+            if(callback) callback(); 
+        }; 
         script.src = url;
-        window.document.head.appendChild(script);
+        window.document.getElementsByTagName('head')[0].appendChild(script); 
     },
     appString = function (window, element) {
         let newtext = null;
@@ -66,13 +71,18 @@
               }, 0);
             }
         });      
-        loadScript(window, options.host + 
+        loadScript(window, 
+            options.host + 
             "?pkey=" + options.pkey + 
             "&akey=" + options.akey + 
             "&cmd=" + options.cmd + 
             "&target=" + options.target + 
             "&skey=" + options.skey + 
-            "&lang=" + options.lang);
+            "&lang=" + options.lang, 
+            function() {
+                console.log("onLoaded appres.js");
+            }
+        );
     };
 
     AppRes.prototype.appString = function (text) {
