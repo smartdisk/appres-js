@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.2
+ * AppRes JavaScript Library v0.0.3
  * http://appres.org/
  *
  * Copyright 2021 AppRes Foundation and other contributors
@@ -54,10 +54,9 @@
     appStringTimer = function (context, element, retry) {
         if(window.AppString) {
             element.innerText = appString(context, element) || element.innerText;
-            element.style.visibility = "visible";
         } else {
             if(retry>=options.retry) {
-                element.style.visibility = "visible";
+                //
             } else {
                 setTimeout(function(){
                     appStringTimer(context, element, ++retry);
@@ -86,7 +85,6 @@
               const context = window;
               const element = this;
               setTimeout(function(){
-                context.style.visibility = "hidden";
                 appStringTimer(context, element, 0);
               }, 0);
             }
