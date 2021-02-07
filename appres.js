@@ -54,7 +54,9 @@
     appStringTimer = function (context, element, retry) {
         if(window.AppString) {
             element.innerText = appString(context, element) || element.innerText;
-            context.onChangedAppRes(element, true);
+            if(context.onChangedAppRes) {
+                context.onChangedAppRes(element, true);
+            }
         } else {
             if(retry>=options.retry) {
                 if(context.onChangedAppRes) {
