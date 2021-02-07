@@ -147,29 +147,35 @@
         if(!equalItem(appWindow, "app-res-url", appresurl)) {
           clearItems(appWindow);
         }
+
         var appres_appstring = getItem(appWindow, "app-res-appstring");
         if(appres_appstring) {
           try {
             var appstring_json = JSON.parse(appres_appstring);
             appWindow.AppString = appstring_json;
-            console.log("AppRes: Loaded app string from localstorage");
-            if(appWindow.onLoadedAppRes) {
-              appWindow.onLoadedAppRes();
-            }
+            appres_appstring = true;
           } catch (e) {
             clearItems(appWindow);
+            appres_appstring = null;
           }          
         }
-    
-        loadScript(window, appresurl, 
-          function() {
-              setItem(appWindow, "app-res-url", appresurl);
-              setItem(appWindow, "app-res-appstring", JSON.stringify(window.AppString));
-              if(appWindow.onLoadedAppRes) {
-                  appWindow.onLoadedAppRes();
-              }
+        
+        if(appres_appstring==true) {
+          console.log("AppRes: Loaded app string from localstorage");
+          if(appWindow.onLoadedAppRes) {
+            appWindow.onLoadedAppRes();
           }
-        );
+        } else {
+          loadScript(window, appresurl, 
+            function() {
+                setItem(appWindow, "app-res-url", appresurl);
+                setItem(appWindow, "app-res-appstring", JSON.stringify(window.AppString));
+                if(appWindow.onLoadedAppRes) {
+                    appWindow.onLoadedAppRes();
+                }
+            }
+          );  
+        }    
     };
 
     AppRes.prototype.appString = function (text) {
