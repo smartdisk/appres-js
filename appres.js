@@ -78,7 +78,7 @@
                 window.localStorage.setItem( k, '--' + deno );
               j = Math.ceil( v / deno );
               for( i = 0 ; i < deno ; i++ )
-              window.localStorage.setItem( k + '::' + i, v.substr( i * j, j );
+              window.localStorage.setItem( k + '::' + i, v.substr( i * j, j ));
             }
             break;
           }catch(e){
