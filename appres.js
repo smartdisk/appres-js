@@ -58,7 +58,7 @@
         } else {
             if(retry>=options.retry) return;
             setTimeout(function(){
-                appStringTimer(context, element, retry++);
+                appStringTimer(context, element, ++retry);
             }, options.time);
         }
     };
