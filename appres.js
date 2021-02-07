@@ -152,14 +152,19 @@
         if(appres_appstring) {
           try {
             var appstring_json = JSON.parse(appres_appstring);
-            appWindow.AppString = appstring_json;
-            appres_appstring = true;
+            var key_count  = Object.keys(appstring_json).length;
+            if(key_count>0) {
+              appWindow.AppString = appstring_json;
+              appres_appstring = true;
+            } else {
+              appres_appstring = false;  
+            }
           } catch (e) {
             clearItems(appWindow);
             appres_appstring = null;
           }          
         }
-        
+
         if(appres_appstring==true) {
           console.log("AppRes: Loaded app string from localstorage");
           if(appWindow.onLoadedAppRes) {
