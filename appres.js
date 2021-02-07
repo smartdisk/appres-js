@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.1
+ * AppRes JavaScript Library v0.0.2
  * http://appres.org/
  *
  * Copyright 2021 AppRes Foundation and other contributors
@@ -83,12 +83,10 @@
         window.customElements.define('app-res', class extends HTMLElement {
             constructor() {
               super();
-
-              this.style.visibility = "hidden";
-
               const context = window;
               const element = this;
               setTimeout(function(){
+                context.style.visibility = "hidden";
                 appStringTimer(context, element, 0);
               }, 0);
             }
