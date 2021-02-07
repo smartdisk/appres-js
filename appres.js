@@ -105,6 +105,8 @@
     },
     clearItems = function ( window ) {
         window.localStorage.clear();
+    },
+    equalsItem = function ( window,  data ) {
     }
     var appWindow = window;
     var AppRes = function( window, _options ) {
@@ -137,9 +139,10 @@
           "&target=" + options.target + 
           "&skey=" + options.skey + 
           "&lang=" + options.lang;
+        
         loadScript(window, appresurl, 
             function() {
-                clearItems();
+                clearItems(appWindow);
                 setItem(appWindow, "app-res-url", appresurl);
                 setItem(appWindow, "app-res-appstring", JSON.stringify(window.AppString));
                 if(appWindow.onLoadedAppRes) {
