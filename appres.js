@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.3
+ * AppRes JavaScript Library v0.0.4
  * http://appres.org/
  *
  * Copyright 2021 AppRes Foundation and other contributors
@@ -44,9 +44,9 @@
         }
         if(!newtext) {
           if(window.AppString) {
-            console.log("AppRes:" + element.innerText);
+            console.log("AppRes: " + element.innerText);
           } else {
-            console.log("AppRes:" + element.innerText + " " + "(Not found AppString!!!)");
+            console.log("AppRes: " + element.innerText + " " + "(Not found AppString!!!)");
           }
         }
         return newtext;
@@ -104,9 +104,12 @@
         window.localStorage.removeItem(k);
     },
     clearItems = function ( window ) {
-        window.localStorage.clear();
+      removeItem(window, "app-res-url");
+      removeItem(window, "app-res-appstring");
     },
-    equalsItem = function ( window,  data ) {
+    equalItem = function ( window,  k, v ) {
+        var data = getItem( window, k );
+        return (v==data);
     }
     var appWindow = window;
     var AppRes = function( window, _options ) {
@@ -132,6 +135,7 @@
               }, 0);
             }
         });
+
         var appresurl = options.host + 
           "?pkey=" + options.pkey + 
           "&akey=" + options.akey + 
@@ -139,16 +143,32 @@
           "&target=" + options.target + 
           "&skey=" + options.skey + 
           "&lang=" + options.lang;
-        
-        loadScript(window, appresurl, 
-            function() {
-                clearItems(appWindow);
-                setItem(appWindow, "app-res-url", appresurl);
-                setItem(appWindow, "app-res-appstring", JSON.stringify(window.AppString));
-                if(appWindow.onLoadedAppRes) {
-                    appWindow.onLoadedAppRes();
-                }
+
+        if(!equalItem(appWindow, "app-res-url", appresurl)) {
+          clearItems(appWindow);
+        }
+        var appres_appstring = getItem(appWindow, "app-res-appstring");
+        if(appres_appstring) {
+          try {
+            var appstring_json = JSON.parse(appres_appstring);
+            appWindow.AppString = appstring_json;
+            console.log("AppRes: Loaded app string from localstorage");
+            if(appWindow.onLoadedAppRes) {
+              appWindow.onLoadedAppRes();
             }
+          } catch (e) {
+            clearItems(appWindow);
+          }          
+        }
+    
+        loadScript(window, appresurl, 
+          function() {
+              setItem(appWindow, "app-res-url", appresurl);
+              setItem(appWindow, "app-res-appstring", JSON.stringify(window.AppString));
+              if(appWindow.onLoadedAppRes) {
+                  appWindow.onLoadedAppRes();
+              }
+          }
         );
     };
 
@@ -164,7 +184,7 @@
     if(window.onInitAppRes) {
         window.onInitAppRes();        
     } else {
-        console.log("AppRes requires a global function called onInitAppRes(). Visit appres.org for more information.");
+        console.log("AppRes: Requires a global function called onInitAppRes(). Visit appres.org for more information.");
     }
     
 })( window );
