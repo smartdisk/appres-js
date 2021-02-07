@@ -138,9 +138,9 @@
             "&lang=" + options.lang, 
             function() {
                 console.log("onLoaded appres.js");
-                console.log("AppString:" + window.AppString);
-
-                setItem(appWindow, "app-res", window.AppString);
+                console.log("localStorage.remainingSpace " + localStorage.remainingSpace);                
+                console.log("AppString:" + JSON.stringify(window.AppString));
+                setItem(appWindow, "app-res", JSON.stringify(window.AppString));
 
                 if(appWindow.onLoadedAppRes) {
                     appWindow.onLoadedAppRes();
