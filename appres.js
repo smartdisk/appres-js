@@ -20,7 +20,7 @@
         target: "js",
         skey: "default",
         lang: "ja-JP",
-        retry: 5,
+        retry: 50,
         time: 10 
     },
     loadScript = function (window, url, callback) {
