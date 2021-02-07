@@ -68,7 +68,7 @@
               const element = this;
               setTimeout(function(){
                 element.innerText = appString(context, element) || element.innerText;
-              }, 0);
+              }, window.AppString ? 0 : 100);
             }
         });      
         loadScript(window, 
