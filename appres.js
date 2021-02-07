@@ -66,6 +66,7 @@
               super();
               const context = window;
               const element = this;
+              console.log("window.AppString:" + window.AppString);
               setTimeout(function(){
                 element.innerText = appString(context, element) || element.innerText;
               }, window.AppString ? 0 : 100);
