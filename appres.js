@@ -86,6 +86,8 @@
 
     if(window.onLoadAppRes) {
         window.onLoadAppRes();
+    } else {
+        console.log("AppRes requires a global function called onLoadAppRes(). Visit appres.org for more information.");
     }
     
 })( window );
