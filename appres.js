@@ -83,9 +83,11 @@
         window.customElements.define('app-res', class extends HTMLElement {
             constructor() {
               super();
+
+              this.style.visibility = "hidden";
+
               const context = window;
               const element = this;
-              element.style.visibility = "hidden";
               setTimeout(function(){
                 appStringTimer(context, element, 0);
               }, 0);
