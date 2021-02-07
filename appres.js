@@ -19,7 +19,9 @@
         cmd: "string",
         target: "js",
         skey: "default",
-        lang: "ja-JP"    
+        lang: "ja-JP",
+        retry: 5,
+        time: 50 
     },
     loadScript = function (window, url, callback) {
         var script = window.document.createElement("script");
@@ -53,10 +55,10 @@
         if(window.AppString) {
             element.innerText = appString(context, element) || element.innerText;
         } else {
-            if(retry>5) return;
+            if(retry>=options.retry) return;
             setTimeout(function(){
                 appStringTimer(context, element, retry++);
-            }, 50);
+            }, options.time);
         }
     };
 
@@ -92,6 +94,9 @@
             "&lang=" + options.lang, 
             function() {
                 console.log("onLoaded appres.js");
+                if(window.onLoadedAppRes) {
+                    window.onLoadedAppRes();
+                }
             }
         );
     };
