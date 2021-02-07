@@ -54,11 +54,15 @@
     appStringTimer = function (context, element, retry) {
         if(window.AppString) {
             element.innerText = appString(context, element) || element.innerText;
+            element.style.visibility = "visible";
         } else {
-            if(retry>=options.retry) return;
-            setTimeout(function(){
-                appStringTimer(context, element, ++retry);
-            }, options.time);
+            if(retry>=options.retry) {
+                element.style.visibility = "visible";
+            } else {
+                setTimeout(function(){
+                    appStringTimer(context, element, ++retry);
+                }, options.time);    
+            }
         }
     };
 
@@ -81,6 +85,7 @@
               super();
               const context = window;
               const element = this;
+              element.style.visibility = "hidden";
               setTimeout(function(){
                 appStringTimer(context, element, 0);
               }, 0);
