@@ -79,17 +79,15 @@
         return appString(appWindow, text);
     };
 
-    window.AppRes = AppRes;    
     if ( typeof define === "function" && define.amd && define.amd.AppRes ) {
         define( "appres", [], function () { return AppRes; } );
     }
 
-    if(window.onLoadAppRes) {
-        setTimeout(function() {
-            window.onLoadAppRes();
-        }, 0);
+    if(window.onReadAppResOptions) {
+        var options = window.onReadAppResOptions();
+        window.AppRes = new AppRes(window, options);
     } else {
-        console.log("AppRes requires a global function called onLoadAppRes(). Visit appres.org for more information.");
+        console.log("AppRes requires a global function called onReadAppResOptions(). Visit appres.org for more information.");
     }
     
 })( window );
