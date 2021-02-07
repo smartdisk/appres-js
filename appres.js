@@ -48,7 +48,18 @@
           }
         }
         return newtext;
+    },
+    appStringTimer = function (context, element, retry) {
+        if(window.AppString) {
+            element.innerText = appString(context, element) || element.innerText;
+        } else {
+            if(retry>3) return;
+            setTimeout(function(){
+                appStringTimer(context, element, 100);
+            }, 0);
+        }
     };
+
     var appWindow = window;
     var AppRes = function( window, _options ) {
         appWindow = window;
@@ -66,10 +77,9 @@
               super();
               const context = window;
               const element = this;
-              console.log("window.AppString:" + window.AppString);
               setTimeout(function(){
-                element.innerText = appString(context, element) || element.innerText;
-              }, window.AppString ? 0 : 100);
+                appStringTimer(context, element, 0);
+              }, 0);
             }
         });      
         loadScript(window, 
