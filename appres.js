@@ -79,19 +79,18 @@
         return appString(appWindow, text);
     };
 
-    window.AppRes = AppRes;    
-    if ( typeof define === "function" && define.amd && define.amd.AppRes ) {
-        define( "appres", [], function () { return AppRes; } );
-    }
-
     if(window.onReadAppResOptions) {
         var options = window.onReadAppResOptions();
         if(options) {
-            new AppRes(window, options);
+            window.AppRes = new AppRes(window, options);
         }
     } else {
         console.log("AppRes requires a global function called onReadAppResOptions(). Visit appres.org for more information.");
     }
     
+    if ( typeof define === "function" && define.amd && define.amd.AppRes ) {
+        define( "appres", [], function () { return AppRes; } );
+    }
+        
 })( window );
 
