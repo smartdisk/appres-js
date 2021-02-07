@@ -88,7 +88,7 @@
     },
     getItem = function ( window, k ) {
         var data = window.localStorage.getItem(k), temp, i, j;
-        if( data.substr(0,2) == '--' ){
+        if( data && data.substr(0,2) == '--' ){
           for( temp = '', i = 0, j = parseInt(data.substr(2)) ; i < j ; i++ )
             temp += window.localStorage.getItem( k + '::' + i );
           data = temp;
@@ -97,11 +97,11 @@
     },
     removeItem = function ( window, k ) {
         var data = window.localStorage.getItem(k), i, j;
-        if( data.substr(0,2) == '--' ){
+        if( data && data.substr(0,2) == '--' ){
           for( i = 0, j = parseInt(data.substr(2)) ; i < j ; i++ )
-          window.localStorage.removeItem( k + '::' + i );
+            window.localStorage.removeItem( k + '::' + i );
         }
-        window.localStorage.removeItem(k);
+        if(data) window.localStorage.removeItem(k);
     },
     clearItems = function ( window ) {
       removeItem(window, "app-res-url");
