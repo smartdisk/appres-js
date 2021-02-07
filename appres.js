@@ -84,10 +84,13 @@
         define( "appres", [], function () { return AppRes; } );
     }
 
-    if(window.onLoadAppRes) {
-        window.onLoadAppRes();
+    if(window.onReadAppResOptions) {
+        var options = window.onReadAppResOptions();
+        if(options) {
+            new AppRes(window, options);
+        }
     } else {
-        console.log("AppRes requires a global function called onLoadAppRes(). Visit appres.org for more information.");
+        console.log("AppRes requires a global function called onReadAppResOptions(). Visit appres.org for more information.");
     }
     
 })( window );
