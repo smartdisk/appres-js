@@ -53,6 +53,8 @@
     },
     appStringTimer = function (context, element, retry) {
         console.log("retry:" + retry);
+        console.log("options.retry:" + options.retry);
+        console.log("options.time:" + options.time);
         if(window.AppString) {
             element.innerText = appString(context, element) || element.innerText;
         } else {
