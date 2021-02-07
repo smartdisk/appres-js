@@ -55,8 +55,8 @@
         } else {
             if(retry>3) return;
             setTimeout(function(){
-                appStringTimer(context, element, 100);
-            }, 0);
+                appStringTimer(context, element, retry++);
+            }, 100);
         }
     };
 
