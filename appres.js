@@ -85,7 +85,9 @@
     }
 
     if(window.onLoadAppRes) {
-        window.onLoadAppRes();
+        setTimeout(function() {
+            window.onLoadAppRes();
+        }, 0);
     } else {
         console.log("AppRes requires a global function called onLoadAppRes(). Visit appres.org for more information.");
     }
