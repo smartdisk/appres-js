@@ -68,7 +68,41 @@
                 }, options.time);    
             }
         }
-    };
+    },
+    setItem = function ( window, k, v ) {
+        var deno = 0, i, j;
+        while(1){
+          try{
+            if( !deno ) window.localStorage.setItem( k, v );
+            else{
+                window.localStorage.setItem( k, '--' + deno );
+              j = Math.ceil( v / deno );
+              for( i = 0 ; i < deno ; i++ )
+              window.localStorage.setItem( k + '::' + i, v.substr( i * j, j );
+            }
+            break;
+          }catch(e){
+            deno++;
+          }
+        }
+    },
+    getItem = function ( window, k ) {
+        var data = window.localStorage.getItem(k), temp, i, j;
+        if( data.substr(0,2) == '--' ){
+          for( temp = '', i = 0, j = parseInt(data.substr(2)) ; i < j ; i++ )
+            temp += window.localStorage.getItem( k + '::' + i );
+          data = temp;
+        }
+        return data;
+    },
+    removeItem = function ( window, k ) {
+        var data = window.localStorage.getItem(k), i, j;
+        if( data.substr(0,2) == '--' ){
+          for( i = 0, j = parseInt(data.substr(2)) ; i < j ; i++ )
+          window.localStorage.removeItem( k + '::' + i );
+        }
+        window.localStorage.removeItem(k);
+    }
 
     var appWindow = window;
     var AppRes = function( window, _options ) {
@@ -104,8 +138,12 @@
             "&lang=" + options.lang, 
             function() {
                 console.log("onLoaded appres.js");
-                if(window.onLoadedAppRes) {
-                    window.onLoadedAppRes();
+                console.log(window.AppString);
+
+                setItem(appWindow, "app-res", window.AppString);
+
+                if(appWindow.onLoadedAppRes) {
+                    appWindow.onLoadedAppRes();
                 }
             }
         );
