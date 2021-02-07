@@ -76,8 +76,8 @@
             if(_options.target) options.target = _options.target;
             if(_options.skey) options.skey = _options.skey;
             if(_options.lang) options.lang = _options.lang;
-            if(_options.retry!==null) options.retry = _options.retry;
-            if(_options.time!==null) options.time = _options.time;
+            if(_options.retry!=null) options.retry = _options.retry;
+            if(_options.time!=null) options.time = _options.time;
         }
         window.customElements.define('app-res', class extends HTMLElement {
             constructor() {
