@@ -54,28 +54,30 @@
         return newtext;
     },
     appStringAsync = function (window, element, retry, callback) {
-        if(window.AppStrings) {
-            element.innerText = appString(window, element) || element.innerText;
-            if(window.onChangedAppRes) {
-              window.onChangedAppRes(element, true);
-            }
-            if(callback) {
-              callback(true);
-            }
-        } else {
-            if(retry>=options.retry) {
-                if(window.onChangedAppRes) {
-                  window.onChangedAppRes(element, false);
-                }
-              if(callback) {
-                callback(false);
+      console.log("window.AppStrings : " + window.AppStrings);
+
+      if(window.AppStrings) {
+          element.innerText = appString(window, element) || element.innerText;
+          if(window.onChangedAppRes) {
+            window.onChangedAppRes(element, true);
+          }
+          if(callback) {
+            callback(true);
+          }
+      } else {
+          if(retry>=options.retry) {
+              if(window.onChangedAppRes) {
+                window.onChangedAppRes(element, false);
               }
-            } else {
-                setTimeout(function(){
-                  appStringAsync(window, element, ++retry);
-                }, options.time);    
+            if(callback) {
+              callback(false);
             }
-        }
+          } else {
+              setTimeout(function(){
+                appStringAsync(window, element, ++retry, callback);
+              }, options.time);    
+          }
+      }
     },
     setItem = function ( window, k, v ) {
         var deno = 0, i, j;
@@ -195,8 +197,9 @@
             appWindow.onLoadedAppRes();
           }
         } else {
-          loadScript(window, appres_url, 
+          loadScript(appWindow, appres_url, 
             function() {
+              console.log("AppRes: Loaded app string from appres url");
               if(options.cache) {
                 setItem(appWindow, "appres.url", appres_url);
                 setItem(appWindow, "appres.strings", JSON.stringify(window.AppStrings));  
