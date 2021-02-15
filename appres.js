@@ -36,30 +36,27 @@
         window.document.getElementsByTagName('head')[0].appendChild(script); 
     },
     appString = function (window, element) {
-        let newtext = null;
+        var newtext = null;
+        var innerText = $(element).text();
         if(window.APPRES_STRINGS) {
           if(element.hasAttribute('key')) {
             newtext = window.APPRES_STRINGS[element.getAttribute('key')];
           } else {
-            newtext = window.APPRES_STRINGS[element.innerText];
+            newtext = window.APPRES_STRINGS[innerText];
           }  
         }
         if(!newtext) {
           if(window.APPRES_STRINGS) {
-            console.log("AppRes: " + element.innerText);
+            console.log("AppRes: " + innerText);
           } else {
-            console.log("AppRes: " + element.innerText + " " + "(Not found APPRES_STRINGS!!!)");
+            console.log("AppRes: " + innerText + " " + "(Not found APPRES_STRINGS!!!)");
           }
         }
         return newtext;
     },
     appStringAsync = function (window, element, retry, callback) {
-      console.log("window.APPRES_STRINGS : " + JSON.stringify(window.APPRES_STRINGS));
-      console.log("innerText: " + element.innerText);
-      console.log("innerText: " + $(element).text());
-
       if(window.APPRES_STRINGS) {
-          element.innerText = appString(window, element) || element.innerText;
+          $(element).text(appString(window, element) || $(element).text());
           if(window.onChangedAppRes) {
             window.onChangedAppRes(element, true);
           }
