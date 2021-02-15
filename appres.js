@@ -56,6 +56,7 @@
     appStringAsync = function (window, element, retry, callback) {
       console.log("window.APPRES_STRINGS : " + JSON.stringify(window.APPRES_STRINGS));
       console.log("innerText: " + element.innerText);
+      console.log("innerText: " + $(element).text());
 
       if(window.APPRES_STRINGS) {
           element.innerText = appString(window, element) || element.innerText;
