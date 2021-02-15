@@ -113,8 +113,7 @@
         return (v==data);
     },
     translateAll = function ( window ) {
-      console.log(window.$);
-
+      window.$(".appres").attr('style', 'visibility:visible');
     }
 
     var appWindow = window;
