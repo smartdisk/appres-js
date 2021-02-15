@@ -114,6 +114,14 @@
         return (v==data);
     },
     translateAll = function ( window ) {
+      if(options.visibility=="hidden") {
+        showTemporarily(appWindow);
+      }
+    },
+    hideTemporarily = function ( window ) {
+      window.$(".appres").attr('style', 'visibility:hidden');
+    },
+    showTemporarily = function ( window ) {
       window.$(".appres").attr('style', 'visibility:visible');
     }
 
@@ -133,8 +141,10 @@
             if(_options.cache!=null) options.cache = _options.cache;
             if(_options.visibility!=null) options.visibility = _options.visibility;
         }
-
-        window.$(".appres").attr('style', 'visibility:' + options.visibility);
+        
+        if(options.visibility=="hidden") {
+          hideTemporarily(appWindow);
+        }
 
         var appres_url = options.host + 
           "?pkey=" + options.pkey + 
