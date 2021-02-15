@@ -1,10 +1,10 @@
 /*!
  * AppRes JavaScript Library v0.0.4
- * http://appres.org/
+ * https://appres.org/
  *
- * Copyright 2021 AppRes Foundation and other contributors
+ * Copyright 2021 APPRES.ORG and other contributors
  * Released under the MIT license
- * http://appres.org/license
+ * https://appres.org/license
  *
  * Date: 2021.02.07 KST
  */
