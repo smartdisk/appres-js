@@ -36,24 +36,24 @@
     },
     appString = function (window, element) {
         let newtext = null;
-        if(window.AppString) {
+        if(window.AppStrings) {
           if(element.hasAttribute('key')) {
-            newtext = window.AppString[element.getAttribute('key')];
+            newtext = window.AppStrings[element.getAttribute('key')];
           } else {
-            newtext = window.AppString[element.innerText];
+            newtext = window.AppStrings[element.innerText];
           }  
         }
         if(!newtext) {
-          if(window.AppString) {
+          if(window.AppStrings) {
             console.log("AppRes: " + element.innerText);
           } else {
-            console.log("AppRes: " + element.innerText + " " + "(Not found AppString!!!)");
+            console.log("AppRes: " + element.innerText + " " + "(Not found AppStrings!!!)");
           }
         }
         return newtext;
     },
     appStringTimer = function (context, element, retry) {
-        if(window.AppString) {
+        if(window.AppStrings) {
             element.innerText = appString(context, element) || element.innerText;
             if(context.onChangedAppRes) {
                 context.onChangedAppRes(element, true);
@@ -105,13 +105,18 @@
         if(data) window.localStorage.removeItem(k);
     },
     clearItems = function ( window ) {
-      removeItem(window, "app-res-url");
-      removeItem(window, "app-res-appstring");
+      removeItem(window, "appres.url");
+      removeItem(window, "appres.strings");
     },
-    equalItem = function ( window,  k, v ) {
+    equalItem = function ( window, k, v ) {
         var data = getItem( window, k );
         return (v==data);
+    },
+    translateAll = function ( window ) {
+      console.log(window.$);
+
     }
+
     var appWindow = window;
     var AppRes = function( window, _options ) {
         appWindow = window;
@@ -127,18 +132,8 @@
             if(_options.time!=null) options.time = _options.time;
             if(_options.cache!=null) options.cache = _options.cache;
         }
-        window.customElements.define('app-res', class extends HTMLElement {
-            constructor() {
-              super();
-              const context = window;
-              const element = this;
-              setTimeout(function(){
-                appStringTimer(context, element, 0);
-              }, 0);
-            }
-        });
 
-        var appresurl = options.host + 
+        var appres_url = options.host + 
           "?pkey=" + options.pkey + 
           "&akey=" + options.akey + 
           "&cmd=" + options.cmd + 
@@ -146,42 +141,44 @@
           "&skey=" + options.skey + 
           "&lang=" + options.lang;
 
-        if(options.cache && !equalItem(appWindow, "app-res-url", appresurl)) {
+        if(options.cache && !equalItem(appWindow, "appres.url", appres_url)) {
           clearItems(appWindow);
         }
 
-        var appres_appstring = null;
+        var appres_strings = null;
         if(options.cache) {
-          appres_appstring = getItem(appWindow, "app-res-appstring");
-          if(appres_appstring) {
+          appres_strings = getItem(appWindow, "appres.strings");
+          if(appres_strings) {
             try {
-              var appstring_json = JSON.parse(appres_appstring);
-              var key_count  = Object.keys(appstring_json).length;
+              var appres_strings_json = JSON.parse(appres_strings);
+              var key_count  = Object.keys(appres_strings_json).length;
               if(key_count>0) {
-                appWindow.AppString = appstring_json;
-                appres_appstring = true;
+                appWindow.AppStrings = appres_strings_json;
+                appres_strings = true;
               } else {
-                appres_appstring = false;  
+                appres_strings = false;  
               }
             } catch (e) {
               clearItems(appWindow);
-              appres_appstring = null;
+              appres_strings = null;
             }          
           }  
         }
 
-        if(options.cache && appres_appstring==true) {
-          console.log("AppRes: Loaded app string from localstorage");
+        if(options.cache && appres_strings==true) {
+          console.log("AppRes: Loaded app string from cached");
+          translateAll(appWindow);
           if(appWindow.onLoadedAppRes) {
             appWindow.onLoadedAppRes();
           }
         } else {
-          loadScript(window, appresurl, 
+          loadScript(window, appres_url, 
             function() {
               if(options.cache) {
-                setItem(appWindow, "app-res-url", appresurl);
-                setItem(appWindow, "app-res-appstring", JSON.stringify(window.AppString));  
+                setItem(appWindow, "appres.url", appres_url);
+                setItem(appWindow, "appres.strings", JSON.stringify(window.AppStrings));  
               }
+              translateAll(appWindow);
               if(appWindow.onLoadedAppRes) {
                   appWindow.onLoadedAppRes();
               }
@@ -197,13 +194,6 @@
     window.AppRes = AppRes;    
     if ( typeof define === "function" && define.amd && define.amd.AppRes ) {
         define( "appres", [], function () { return AppRes; } );
-    }
-
-    if(window.onInitAppRes) {
-        window.onInitAppRes();        
-    } else {
-        console.log("AppRes: Requires a global function called onInitAppRes(). Visit appres.org for more information.");
-    }
-    
+    }    
 })( window );
 
