@@ -53,20 +53,26 @@
         }
         return newtext;
     },
-    appStringTimer = function (context, element, retry) {
+    appStringAsync = function (window, element, retry, callback) {
         if(window.AppStrings) {
-            element.innerText = appString(context, element) || element.innerText;
-            if(context.onChangedAppRes) {
-                context.onChangedAppRes(element, true);
+            element.innerText = appString(window, element) || element.innerText;
+            if(window.onChangedAppRes) {
+              window.onChangedAppRes(element, true);
+            }
+            if(callback) {
+              callback(true);
             }
         } else {
             if(retry>=options.retry) {
-                if(context.onChangedAppRes) {
-                    context.onChangedAppRes(element, false);
+                if(window.onChangedAppRes) {
+                  window.onChangedAppRes(element, false);
                 }
+              if(callback) {
+                callback(false);
+              }
             } else {
                 setTimeout(function(){
-                    appStringTimer(context, element, ++retry);
+                  appStringAsync(window, element, ++retry);
                 }, options.time);    
             }
         }
@@ -115,10 +121,11 @@
     },
     translateAll = function ( window ) {
       window.$(".appres").each(function (index, item) {
-        console.log(index + ":" + $(item).text());
-        if(options.visibility=="hidden") {
-          $(item).attr('style', 'visibility:visible');
-        }  
+        appStringAsync(window, item, 0, function(success) {
+          if(options.visibility=="hidden") {
+            $(item).attr('style', 'visibility:visible');
+          }  
+        });
       });
     },
     hideTemporarily = function ( window ) {
