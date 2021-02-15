@@ -122,7 +122,9 @@
         return (v==data);
     },
     translateAll = function ( window ) {
-      console.log(">>> " + window.$(".appres"));
+      var items = window.$(".appres");
+      console.log(">>> items:" + items);
+      console.log(">>> items:" + items.length);
       window.$(".appres").each(function (index, item) {
         console.log(">>> item:" + item);
         appStringAsync(window, item, 0, function(success) {
