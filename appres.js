@@ -122,6 +122,7 @@
         return (v==data);
     },
     translateAll = function ( window ) {
+      console.log(">>> " + window.$(".appres"));
       window.$(".appres").each(function (index, item) {
         appStringAsync(window, item, 0, function(success) {
           if(options.visibility=="hidden") {
