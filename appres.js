@@ -22,7 +22,8 @@
         lang: "ja-JP",
         retry: 50,
         time: 25,
-        cache: true
+        cache: true,
+        visibility: "hidden"
     },
     loadScript = function (window, url, callback) {
         var script = window.document.createElement("script");
@@ -130,7 +131,10 @@
             if(_options.retry!=null) options.retry = _options.retry;
             if(_options.time!=null) options.time = _options.time;
             if(_options.cache!=null) options.cache = _options.cache;
+            if(_options.visibility!=null) options.visibility = _options.visibility;
         }
+
+        window.$(".appres").attr('style', 'visibility:' + options.visibility);
 
         var appres_url = options.host + 
           "?pkey=" + options.pkey + 
