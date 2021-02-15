@@ -37,26 +37,26 @@
     },
     appString = function (window, element) {
         let newtext = null;
-        if(window.AppStrings) {
+        if(window.AppString) {
           if(element.hasAttribute('key')) {
-            newtext = window.AppStrings[element.getAttribute('key')];
+            newtext = window.AppString[element.getAttribute('key')];
           } else {
-            newtext = window.AppStrings[element.innerText];
+            newtext = window.AppString[element.innerText];
           }  
         }
         if(!newtext) {
-          if(window.AppStrings) {
+          if(window.AppString) {
             console.log("AppRes: " + element.innerText);
           } else {
-            console.log("AppRes: " + element.innerText + " " + "(Not found AppStrings!!!)");
+            console.log("AppRes: " + element.innerText + " " + "(Not found AppString!!!)");
           }
         }
         return newtext;
     },
     appStringAsync = function (window, element, retry, callback) {
-      console.log("window.AppStrings : " + window.AppStrings);
+      console.log("window.AppString : " + window.AppString);
 
-      if(window.AppStrings) {
+      if(window.AppString) {
           element.innerText = appString(window, element) || element.innerText;
           if(window.onChangedAppRes) {
             window.onChangedAppRes(element, true);
@@ -115,7 +115,7 @@
     },
     clearItems = function ( window ) {
       removeItem(window, "appres.url");
-      removeItem(window, "appres.strings");
+      removeItem(window, "appres.appstring");
     },
     equalItem = function ( window, k, v ) {
         var data = getItem( window, k );
@@ -172,13 +172,13 @@
 
         var appres_strings = null;
         if(options.cache) {
-          appres_strings = getItem(appWindow, "appres.strings");
+          appres_strings = getItem(appWindow, "appres.appstring");
           if(appres_strings) {
             try {
               var appres_strings_json = JSON.parse(appres_strings);
               var key_count  = Object.keys(appres_strings_json).length;
               if(key_count>0) {
-                appWindow.AppStrings = appres_strings_json;
+                appWindow.AppString = appres_strings_json;
                 appres_strings = true;
               } else {
                 appres_strings = false;  
@@ -202,7 +202,7 @@
               console.log("AppRes: Loaded app string from appres url");
               if(options.cache) {
                 setItem(appWindow, "appres.url", appres_url);
-                setItem(appWindow, "appres.strings", JSON.stringify(window.AppStrings));  
+                setItem(appWindow, "appres.appstring", JSON.stringify(window.AppString));  
               }
               translateAll(appWindow);
               if(appWindow.onLoadedAppRes) {
