@@ -114,9 +114,12 @@
         return (v==data);
     },
     translateAll = function ( window ) {
-      if(options.visibility=="hidden") {
-        showTemporarily(appWindow);
-      }
+      window.$(".appres").each(function (index, element) {
+        console.log(index + ":" + element.text());
+        if(options.visibility=="hidden") {
+          element.attr('style', 'visibility:visible');
+        }  
+      });
     },
     hideTemporarily = function ( window ) {
       window.$(".appres").attr('style', 'visibility:hidden');
