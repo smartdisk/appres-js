@@ -114,10 +114,10 @@
         return (v==data);
     },
     translateAll = function ( window ) {
-      window.$(".appres").each(function (index, element) {
-        console.log(index + ":" + element.text());
+      window.$(".appres").each(function (index, item) {
+        console.log(index + ":" + $(item).text());
         if(options.visibility=="hidden") {
-          element.attr('style', 'visibility:visible');
+          $(item).attr('style', 'visibility:visible');
         }  
       });
     },
