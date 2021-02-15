@@ -122,10 +122,7 @@
     },
     translateAll = function ( window ) {
       var items = window.$(".appres");
-      console.log(">>> items:" + items);
-      console.log(">>> items:" + items.length);
       items.each(function (index, item) {
-        console.log(">>> item:" + item);
         appStringAsync(window, item, 0, function(success) {
           if(options.visibility=="hidden") {
             $(item).attr('style', 'visibility:visible');
