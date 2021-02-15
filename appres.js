@@ -54,7 +54,8 @@
         return newtext;
     },
     appStringAsync = function (window, element, retry, callback) {
-      console.log("window.APPRES_STRINGS : " + window.APPRES_STRINGS);
+      console.log("window.APPRES_STRINGS : " + JSON.stringify(window.APPRES_STRINGS));
+      console.log("innerText: " + element.innerText);
 
       if(window.APPRES_STRINGS) {
           element.innerText = appString(window, element) || element.innerText;
@@ -125,7 +126,7 @@
       var items = window.$(".appres");
       console.log(">>> items:" + items);
       console.log(">>> items:" + items.length);
-      window.$(".appres").each(function (index, item) {
+      items.each(function (index, item) {
         console.log(">>> item:" + item);
         appStringAsync(window, item, 0, function(success) {
           if(options.visibility=="hidden") {
