@@ -1,1 +1,1 @@
-# The AppRes JavaScript Library
+# The AppRes JavaScript & CSS
