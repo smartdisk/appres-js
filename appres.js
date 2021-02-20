@@ -264,5 +264,38 @@
   if (typeof define === "function" && define.amd && define.amd.AppRes) {
     define("appres", [], function () { return AppRes; });
   }
+
+
+  if (document.addEventListener) { 
+    // Mozilla, Opera, Webkit 
+    document.addEventListener("DOMContentLoaded", function () { 
+      document.removeEventListener("DOMContentLoaded", arguments.callee, false); 
+        if(window.onAppResReady) {
+          setTimeout(function() {
+            window.onAppResReady();
+          }, 0);
+        } else {
+          console.log("AppRes: Required onAppResReady() function !!!");
+        }
+      }, false); 
+  } 
+  else 
+  if (document.attachEvent) { 
+    // Internet Explorer 
+    document.attachEvent("onreadystatechange", function () { 
+      if (document.readyState === "complete") { 
+        document.detachEvent("onreadystatechange", arguments.callee); 
+        if(window.onAppResReady) {
+          setTimeout(function() {
+            window.onAppResReady();
+          }, 0);
+        } else {
+          console.log("AppRes: Required onAppResReady() function !!!");
+        }
+      } 
+    }); 
+  }
+  
 })(window);
+
 
