@@ -20,7 +20,7 @@
       target: "js",
       skey: "default",
       lang: "ja-JP",
-      only: false,
+      bringall: false,
       retry: 50,
       time: 25,
       cache: true,
@@ -186,7 +186,7 @@
       if (_options.target) options.target = _options.target;
       if (_options.skey) options.skey = _options.skey;
       if (_options.lang) options.lang = _options.lang;
-      if (_options.only) options.only = _options.only;
+      if (_options.bringall) options.bringall = _options.bringall;
       if (_options.retry != null) options.retry = _options.retry;
       if (_options.time != null) options.time = _options.time;
       if (_options.cache != null) options.cache = _options.cache;
@@ -204,7 +204,7 @@
       "&cmd=" + options.cmd +
       "&target=" + options.target +
       "&skey=" + options.skey;
-    if (options.only == true) {
+    if (options.bringall == false) {
       appres_url += "&lang=" + options.lang;
     }
     appres_url += "&ver=" + ver;
