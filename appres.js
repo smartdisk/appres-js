@@ -24,7 +24,12 @@
       retry: 50,
       time: 25,
       cache: true,
-      visibility: "hidden"
+      visibility: "hidden",
+      langs_selector: {
+        langs: "appres-langs",
+        langs_button: "appres-langs-button",  
+        langs_items: "appres-langs-items",  
+      }
     },
     loadScript = function (window, url, callback) {
       var script = window.document.createElement("script");

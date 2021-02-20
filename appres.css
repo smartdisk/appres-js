@@ -1,3 +1,40 @@
 .appres {
   visibility: hidden;
 }
+
+
+
+.appres-langs {
+  position: absolute;
+  display: none;
+  right: 10px;
+  top: 10px;
+}
+.appres-langs-button {
+  background-color: #4CAF50;
+  color: white;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 16px;
+  min-width: 160px;
+  border: none;
+}
+.appres-langs:hover .appres-langs-button {background-color: #3e8e41;}
+.appres-langs-items {
+  display: none;
+  position: absolute;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+.appres-langs:hover .appres-langs-items {display: block;}
+.appres-langs-items div {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+.appres-langs-items div:hover {background-color: #ddd;}
