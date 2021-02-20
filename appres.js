@@ -14,23 +14,25 @@
   var
     options = {
       host: "https://appres.org/functions/api",
+      //host: "http://127.0.0.1:5001/appres-org/us-central1/api",
       pkey: "GXYqIgrafjTRatwTB96d",
       akey: "39f031e6-94a0-4e14-b600-82779ec899d7",
       cmd: "string",
       target: "js",
       skey: "default",
       lang: "ja-JP",
-      bringall: false,
       retry: 50,
       time: 25,
       cache: true,
       visibility: "hidden",
+      langs_all: false,
       langs_selector: {
-        langs: "appres-langs",
-        langs_button: "appres-langs-button",  
-        langs_items: "appres-langs-items",  
+        langs: ".appres-langs",
+        langs_button: ".appres-langs-button",  
+        langs_items: ".appres-langs-items",  
       }
     },
+    isInitLangsSelector = false,
     loadScript = function (window, url, callback) {
       var script = window.document.createElement("script");
       script.type = 'text/javascript';
@@ -43,11 +45,11 @@
     },
     elementText = function (element, text) {
       if (text) {
-        if (element.textContent) {
+        if (element.textContent!=null) {
           element.textContent = text;
           return element.textContent;
         }
-        if (element.innerText) {
+        if (element.innerText!=null) {
           element.innerText = text;
           return element.innerText;
         }
@@ -64,7 +66,9 @@
         if (element.hasAttribute('key')) {
           newtext = window.APPRES_STRINGS[element.getAttribute('key')];
         } else {
-          if (text != null) newtext = window.APPRES_STRINGS[text];
+          if (text != null) {
+            newtext = window.APPRES_STRINGS[text];
+          }
         }
       }
       if (newtext) {
@@ -86,6 +90,9 @@
     },
     appStringAsync = function (window, element, retry, callback) {
       if (window.APPRES_STRINGS) {
+        if(isInitLangsSelector==false) {
+          initLangsSelector(window);
+        }
         elementText(element, appString(window, element) || elementText(element));
         if (window.onChangedAppRes) {
           window.onChangedAppRes(element, true);
@@ -145,6 +152,7 @@
     clearItems = function (window) {
       removeItem(window, "appres.ver");
       removeItem(window, "appres.url");
+      removeItem(window, "appres.langs");
       removeItem(window, "appres.strings");
     },
     equalItem = function (window, k, v) {
@@ -157,6 +165,98 @@
     elementSelectAll = function (window, selector) {
       return window.document.querySelectorAll(selector);
     },
+    getSystemLang = function (window) {
+      return window.navigator.language || window.navigator.userLanguage; 
+    },
+    getElementStyleDisplay = function (window, element) {
+      return element.currentStyle ? element.currentStyle.display : window.getComputedStyle(element, null).display;
+    },
+    getLangs = function (window) {
+      var appres_langs = elementSelectAll(window, options.langs_selector.langs);
+      if(appres_langs.length>0) {
+        return appres_langs[0];
+      }
+      return null;
+    },
+    getLangsButton = function (window) {
+      var appres_langs_button = elementSelectAll(window, options.langs_selector.langs_button);
+      if(appres_langs_button.length>0) {
+        return appres_langs_button[0];
+      }
+      return null;
+    },
+    getLangsSelector = function (window) {
+      var appres_langs_items = elementSelectAll(window, options.langs_selector.langs_items);
+      if(appres_langs_items.length>0) {
+        return appres_langs_items[0];
+      }
+      return null;
+    },
+    toggleLangsSelector = function (window) {
+      var items_div = getLangsSelector(window);
+      if(items_div) {
+        if(getElementStyleDisplay(window, items_div)=="none") {
+          items_div.setAttribute('style', "display:block");
+        } else {
+          items_div.setAttribute('style', "display:none");
+        }  
+      }
+    },
+    initLangsSelector = function (window) {
+      var langs_button = getLangsButton(window);
+      if(langs_button) {
+        var lang = window.APPRES_LANGS[options.lang];
+        if(!lang) {
+          options.lang = getSystemLang(window);
+          lang = window.APPRES_LANGS[options.lang];
+        }
+        if(!lang) {
+          options.lang = "en-US";
+          lang = window.APPRES_LANGS[options.lang];
+          if(!lang) {
+            options.lang = Object.keys(window.APPRES_LANGS)[0];
+            lang = window.APPRES_LANGS[options.lang];
+          }
+        }          
+        if(lang) {
+          elementText(langs_button, lang);
+          isInitLangsSelector = true;
+
+          var appres_langs = getLangs(window);
+          if(appres_langs) {
+            appres_langs.setAttribute('style', 'display:block');
+          }
+        }
+        var items_div = getLangsSelector(window);
+        if(items_div) {
+          var langs = Object.keys(window.APPRES_LANGS);
+          langs.forEach(function (lang) {
+            var lang_name = window.APPRES_LANGS[lang];
+            var lang_div = document.createElement('div');
+            lang_div.id = lang;
+            if(options.lang==lang) {
+              lang_div.className = "selected";
+            }
+            elementText(lang_div, lang_name);
+            items_div.appendChild(lang_div);
+            lang_div.onclick = function(e) {
+              var lang = e.target.id;
+              if(lang!=options.lang) {
+                items_div.setAttribute('style', "display:none");
+                options.lang = lang;
+                setItem(appWindow, "appres.lang", options.lang);
+                if(!options.langs_all) {
+                  window.location.reload();
+                }
+              }
+            }
+          });
+          langs_button.onclick = function(e) {
+            toggleLangsSelector(window);
+          }  
+        }
+      }
+    },
     translateAll = function (window) {
       var elements = elementSelectAll(window, ".appres");
       elements.forEach(function (element) {
@@ -166,6 +266,9 @@
           }
         });
       })
+    },
+    applyPageAll = function (window) {
+      translateAll(window);
     },
     hideTemporarily = function (window) {
       var elements = elementSelectAll(window, ".appres");
@@ -183,6 +286,12 @@
   var appWindow = window;
   var AppRes = function (window, _options) {
     appWindow = window;
+
+    options.lang = getItem(appWindow, "appres.lang");
+    if(options.lang==null) {
+      options.lang = getSystemLang(appWindow);
+    }
+
     if (_options) {
       if (_options.host) options.host = _options.host;
       if (_options.pkey) options.pkey = _options.pkey;
@@ -191,7 +300,7 @@
       if (_options.target) options.target = _options.target;
       if (_options.skey) options.skey = _options.skey;
       if (_options.lang) options.lang = _options.lang;
-      if (_options.bringall) options.bringall = _options.bringall;
+      if (_options.langs_all) options.langs_all = _options.langs_all;
       if (_options.retry != null) options.retry = _options.retry;
       if (_options.time != null) options.time = _options.time;
       if (_options.cache != null) options.cache = _options.cache;
@@ -209,13 +318,33 @@
       "&cmd=" + options.cmd +
       "&target=" + options.target +
       "&skey=" + options.skey;
-    if (options.bringall == false) {
+    if (options.langs_all == false) {
       appres_url += "&lang=" + options.lang;
     }
     appres_url += "&ver=" + ver;
 
     if (ver == 0 || options.cache == false || (options.cache && !equalItem(appWindow, "appres.url", appres_url))) {
       clearItems(appWindow);
+    }
+
+    var appres_langs = null;
+    if (options.cache) {
+      appres_langs = getItem(appWindow, "appres.langs");
+      if (appres_langs) {
+        try {
+          var appres_langs_json = JSON.parse(appres_langs);
+          var key_count = Object.keys(appres_langs_json).length;
+          if (key_count > 0) {
+            appWindow.APPRES_LANGS = appres_langs_json;
+            appres_langs = true;
+          } else {
+            appres_langs = false;
+          }
+        } catch (e) {
+          clearItems(appWindow);
+          appres_langs = null;
+        }
+      }
     }
 
     var appres_strings = null;
@@ -238,9 +367,9 @@
       }
     }
 
-    if (options.cache && appres_strings == true) {
+    if (options.cache && appres_langs == true && appres_strings == true) {
       console.log("AppRes: Loaded app string from cached");
-      translateAll(appWindow);
+      applyPageAll(appWindow);
       if (appWindow.onLoadedAppRes) {
         appWindow.onLoadedAppRes();
       }
@@ -250,9 +379,10 @@
           console.log("AppRes: Loaded app string from appres url");
           if (options.cache) {
             setItem(appWindow, "appres.url", appres_url);
+            setItem(appWindow, "appres.langs", JSON.stringify(window.APPRES_LANGS));
             setItem(appWindow, "appres.strings", JSON.stringify(window.APPRES_STRINGS));
           }
-          translateAll(appWindow);
+          applyPageAll(appWindow);
           if (appWindow.onLoadedAppRes) {
             appWindow.onLoadedAppRes();
           }
