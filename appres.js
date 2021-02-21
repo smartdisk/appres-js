@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.11
+ * AppRes JavaScript Library v0.0.12
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -75,6 +75,11 @@
     },
     appString = function (window, element) {
       var newtext = null;
+      if (typeof element === "string") {
+        newtext = window.APPRES_STRINGS[element];
+        return newtext || element;
+      }
+      
       var text = elementText(element);
       if (window.APPRES_STRINGS) {
         if (element.hasAttribute('appres')) {
@@ -486,6 +491,12 @@
         }
       );
     }
+  },
+  self = null;
+
+  AppRes.prototype.self = function (o) {
+    if(o) self = o;
+    return self;
   };
 
   AppRes.prototype.appString = function (text, attr) {
@@ -506,11 +517,38 @@
     return translate(window || appWindow);
   };
 
+  AppRes.prototype.$$ = function (a, b) {
+    if(typeof a === 'string') {
+      return self.appString(a);
+    }
+    if(a==window || a==window.document) {
+      self.appTranslate(window, b);
+    } else 
+    if(a==appWindow || a==appWindow.document) {
+      self.appTranslate(appWindow, b);
+    }
+    return self;
+  }
+  AppRes.prototype.$S = function () {
+    return self.appString;    
+  }
+  AppRes.prototype.$T = function () {
+    return self.appTranslate;
+  }
+
   window.AppRes = AppRes;
   if (typeof define === "function" && define.amd && define.amd.AppRes) {
     define("appres", [], function () { return AppRes; });
   }
 
+
+  function init(window){
+    window.APPRES = new AppRes(window, window.onAppResOptions());
+    window.APPRES.self(window.APPRES);
+    window.$$ = window.APPRES.$$;
+    window.$S = window.$$().$S();
+    window.$T = window.$$().$T();
+  }
 
   if (document.addEventListener) { 
     // Mozilla, Opera, Webkit 
@@ -518,7 +556,7 @@
       document.removeEventListener("DOMContentLoaded", arguments.callee, false); 
         if(window.onAppResOptions) {
           setTimeout(function() {
-            window.APPRES = new AppRes(window, window.onAppResOptions());
+            init(window);
           }, 0);
         } else {
           console.log("AppRes: Required onAppResOptions() function !!!");
@@ -533,7 +571,7 @@
         document.detachEvent("onreadystatechange", arguments.callee); 
         if(window.onAppResOptions) {
           setTimeout(function() {
-            window.APPRES = new AppRes(window, window.onAppResOptions());
+            init(window);
           }, 0);
         } else {
           console.log("AppRes: Required onAppResOptions() function !!!");
