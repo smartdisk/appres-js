@@ -1,14 +1,14 @@
 /*!
- * AppRes JavaScript Library v0.0.5
+ * AppRes JavaScript Library v0.0.6
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
  * Released under the MIT license
  * https://appres.org/license
  *
- * Date: 2021.02.07 KST
+ * Create Date: 2021.02.07 KST
+ * Last Update: 2021.02.21 KST
  */
-
 
 (function (window) {
   var
@@ -63,10 +63,11 @@
       var newtext = null;
       var text = elementText(element);
       if (window.APPRES_STRINGS) {
-        if (element.hasAttribute('key')) {
-          newtext = window.APPRES_STRINGS[element.getAttribute('key')];
+        if (element.hasAttribute('appres')) {
+          newtext = window.APPRES_STRINGS[element.getAttribute('appres')];
         } else {
           if (text != null) {
+            element.setAttribute('appres', text);
             newtext = window.APPRES_STRINGS[text];
           }
         }
@@ -196,10 +197,51 @@
       var items_div = getLangsSelector(window);
       if(items_div) {
         if(getElementStyleDisplay(window, items_div)=="none") {
+          clearLangsSelector(window);
+          setLangsSelector(window);
           items_div.setAttribute('style', "display:block");
         } else {
+          clearLangsSelector(window);
           items_div.setAttribute('style', "display:none");
         }  
+      }
+    },
+    clearLangsSelector = function (window) {
+      var items_div = getLangsSelector(window);
+      if(items_div) {
+        while (items_div.firstChild) {
+          items_div.removeChild(items_div.lastChild);
+        }        
+      }
+    },
+    setLangsSelector = function (window) {
+      var items_div = getLangsSelector(window);
+      if(items_div) {
+        var langs = Object.keys(window.APPRES_LANGS);
+        langs.forEach(function (lang) {
+          var lang_name = window.APPRES_LANGS[lang];
+          var lang_div = document.createElement('div');
+          lang_div.id = lang;
+          if(options.lang==lang) {
+            lang_div.className = "selected";
+          }
+          elementText(lang_div, lang_name);
+          items_div.appendChild(lang_div);
+          lang_div.onclick = function(e) {
+            var lang = e.target.id;
+            if(lang!=options.lang) {
+              items_div.setAttribute('style', "display:none");
+              options.lang = lang;
+              setItem(window, "appres.lang", options.lang);
+              initLangsSelector(window);
+              if(options.langs_all==true) {
+                applyPageAll(window);
+              } else {
+                window.location.reload();
+              }
+            }
+          }
+        });
       }
     },
     initLangsSelector = function (window) {
@@ -227,39 +269,15 @@
             appres_langs.setAttribute('style', 'display:block');
           }
         }
-        var items_div = getLangsSelector(window);
-        if(items_div) {
-          var langs = Object.keys(window.APPRES_LANGS);
-          langs.forEach(function (lang) {
-            var lang_name = window.APPRES_LANGS[lang];
-            var lang_div = document.createElement('div');
-            lang_div.id = lang;
-            if(options.lang==lang) {
-              lang_div.className = "selected";
-            }
-            elementText(lang_div, lang_name);
-            items_div.appendChild(lang_div);
-            lang_div.onclick = function(e) {
-              var lang = e.target.id;
-              if(lang!=options.lang) {
-                items_div.setAttribute('style', "display:none");
-                options.lang = lang;
-                setItem(appWindow, "appres.lang", options.lang);
-                if(!options.langs_all) {
-                  window.location.reload();
-                }
-              }
-            }
-          });
-          langs_button.onclick = function(e) {
-            toggleLangsSelector(window);
-          }  
-        }
+        langs_button.onclick = function(e) {
+          toggleLangsSelector(window);
+        }  
       }
     },
     translateAll = function (window) {
       var elements = elementSelectAll(window, ".appres");
       elements.forEach(function (element) {
+        console.log("element:" + element);
         appStringAsync(window, element, 0, function (success) {
           if (options.visibility == "hidden") {
             element.setAttribute('style', 'visibility:visible');
@@ -318,7 +336,7 @@
       "&cmd=" + options.cmd +
       "&target=" + options.target +
       "&skey=" + options.skey;
-    if (options.langs_all == false) {
+    if (options.langs_all != true) {
       appres_url += "&lang=" + options.lang;
     }
     appres_url += "&ver=" + ver;
