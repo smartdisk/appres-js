@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.12
+ * AppRes JavaScript Library v0.0.13
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -9,6 +9,10 @@
  * Create Date: 2021.02.07 KST
  * Last Update: 2021.02.21 KST
  */
+
+if(window.globalThis==null) {
+  window.globalThis = window;
+}
 
 (function (window) {
   var
@@ -33,7 +37,9 @@
         style: {
           button: "auto"
         }
-      }
+      },
+      default_excepts: ["material-icons", "mat-tab-group"],
+      user_excepts: []
     },
     isInitLangsSelector = false,
     loadScript = function (window, url, callback) {
@@ -45,6 +51,20 @@
       };
       script.src = url;
       window.document.getElementsByTagName('head')[0].appendChild(script);
+    },
+    isExpects = function (element) {
+      var arr = element.className.split(" ");
+      for(i=0;i<options.default_excepts.length;i++) {
+        if (arr.indexOf(options.default_excepts[i])>=0) return true;
+      }
+      for(i=0;i<options.user_excepts.length;i++) {
+        if (arr.indexOf(options.default_excepts[i])>=0) return true;
+      }
+      if(element.id) {
+        if(options.default_excepts.indexOf(element.id)>=0) return true;
+        if(options.user_excepts.indexOf(element.id)>=0) return true;
+      }
+      return false;
     },
     elementText = function (element, text) {
       if (text) {
@@ -64,19 +84,21 @@
     },
     elementAttr = function (element, attr, val) {
       if (val) {
-        if (element.getAttribute(attr)) {
-          element.setAttribute(attr, val);
-          return element.getAttribute(attr);
-        }
-      } else {
+        element.setAttribute(attr, val);
         return element.getAttribute(attr);
-      }
-      return null;
+      } 
+      return element.getAttribute(attr);
     },
     appString = function (window, element) {
       var newtext = null;
+      if (typeof window === "string") {
+        element = window;
+        window = appWindow;
+      }
       if (typeof element === "string") {
-        newtext = window.APPRES_STRINGS[element];
+        if(window.APPRES_STRINGS) {
+          newtext = window.APPRES_STRINGS[element];
+        }
         return newtext || element;
       }
       
@@ -143,13 +165,30 @@
         if(isInitLangsSelector==false) {
           initLangsSelector(window);
         }
-        elementText(element, appString(window, element) || elementText(element));
 
+
+        if(elementAttr(element, "appres-lang")==options.lang) {
+          if(callback) callback(true);
+          return;
+        }
+
+        // console.log(" " + elementText(element) + "," + element.className);
+
+        // innerText
+        if(element.childNodes.length==1) {
+          if(elementText(element)!=null) {
+            if(!isExpects(element)) {
+              elementText(element, appString(window, element) || elementText(element));
+            }
+          }
+        }
+
+        // attributes
         var attr = 'title';
         if(elementAttr(element, attr)) {
           elementAttr(element, attr, appAttr(window, element, attr) || elementAttr(element, attr));
         }
-        
+
         if (window.onChangedAppRes) {
           window.onChangedAppRes(element, true);
         }
@@ -355,12 +394,15 @@
         }  
       }
     },
-    translate = function (window) {
-      var elements = elementSelectAll(window, ".appres");
+    translate = function (window, sels) {
+      var elements = (sels==null) ? elementSelectAll(window, ".appres") : elementSelectAll(window, ".appres " + sels);
       elements.forEach(function (element) {
         appTranslateAsync(window, element, 0, function (success) {
-          if (options.visibility == "hidden") {
-            element.setAttribute('style', 'visibility:visible');
+          if(success && elementAttr(element, "appres-lang")==null) {
+            if (options.visibility == "hidden") {
+              element.setAttribute('style', 'visibility:visible');
+            }  
+            elementAttr(element, "appres-lang", options.lang);
           }
         });
       })
@@ -376,7 +418,17 @@
       elements.forEach(function (element) {
         element.setAttribute('style', 'visibility:visible');
       });
-    }
+    },
+    format = function (args) {
+      args = arguments[0];
+      args[0] = appString(args[0]);
+      return args[0].replace(/{(\d+)}/g, 
+        function(match, num) { 
+            num = Number(num) + 1; 
+            return typeof(args[num]) != undefined ? args[num] : match; 
+        }); 
+    },
+    self = null;
 
   var appWindow = window;
   var AppRes = function (window, _options) {
@@ -400,6 +452,7 @@
       if (_options.time != null) options.time = _options.time;
       if (_options.cache != null) options.cache = _options.cache;
       if (_options.visibility != null) options.visibility = _options.visibility;
+      if (_options.excepts != null) options.user_excepts = _options.excepts;
       if (_options.langs_selector != null) {
         if(_options.langs_selector.style != null) {
           if(_options.langs_selector.style.button != null) {
@@ -491,8 +544,7 @@
         }
       );
     }
-  },
-  self = null;
+  }
 
   AppRes.prototype.self = function (o) {
     if(o) self = o;
@@ -503,12 +555,54 @@
     return appString(appWindow, text, attr);
   };
 
-  AppRes.prototype.appTranslate = function (window, delay) {
+  AppRes.prototype.ready = function (callback, interval, limit) {
+    if(callback) {
+      if(window.APPRES_STRINGS != null) {
+        callback(true);
+      } else {
+        if(interval==null) interval = 100;
+        if(interval<10) interval = 10;
+        if(limit==null) limit = 100;
+        if(limit<10) limit = 10;
+        let count = 0;
+        const timerId = setInterval(function() {
+          if((window.APPRES_STRINGS != null)) {
+            clearInterval(timerId);
+            callback(true);
+          } else {
+            count++;
+            if(count>limit) {
+              clearInterval(timerId);
+              callback(false);  
+            }
+          }
+        }, interval);  
+      }
+    }
+    return (window.APPRES_STRINGS != null);
+  };
+
+  AppRes.prototype.appTranslate = function (window, delay, delay2) {
+    if(window!=null && typeof window === 'string') {
+      if(delay!=null && typeof delay === 'number') {
+        delay2 = delay;
+      }
+      delay = window;
+      window = null;
+    }
+    if(delay!=null && typeof delay === 'string') {
+      if(delay2!=null && typeof delay2 === 'number') {
+        setTimeout(function(){translate(window || appWindow, delay)}, delay2);
+        return;
+      }
+      return translate(window || appWindow, delay);
+    }
+
     if(typeof window === 'number') {
       delay = window;
       window = null;
     }
-    if(delay!=null) {
+    if(delay!=null && typeof delay === 'number') {
       setTimeout(function(){
         return translate(window || appWindow);
       }, delay);
@@ -516,16 +610,20 @@
     }
     return translate(window || appWindow);
   };
-
-  AppRes.prototype.$$ = function (a, b) {
-    if(typeof a === 'string') {
+  AppRes.prototype.appSelectAll = function (window, selector) {
+    if(window!=null && typeof window === 'string') {
+      selector = window;
+      window = appWindow;
+    }
+    return elementSelectAll(window, selector);
+  };
+    
+  AppRes.prototype.$$ = function (a, b, c) {
+    if(a && typeof a === 'string') {
       return self.appString(a);
     }
-    if(a==window || a==window.document) {
-      self.appTranslate(window, b);
-    } else 
-    if(a==appWindow || a==appWindow.document) {
-      self.appTranslate(appWindow, b);
+    if(a==window || a==appWindow) {
+      self.appTranslate(a, b, c);
     }
     return self;
   }
@@ -534,6 +632,16 @@
   }
   AppRes.prototype.$T = function () {
     return self.appTranslate;
+  }
+  AppRes.prototype.$Q = function () {
+    return self.appSelectAll;
+  }
+
+  AppRes.prototype.format = function () { 
+    return format(arguments);
+  }
+  AppRes.prototype.$F = function () { 
+    return format(arguments);
   }
 
   window.AppRes = AppRes;
@@ -548,27 +656,32 @@
     window.$$ = window.APPRES.$$;
     window.$S = window.$$().$S();
     window.$T = window.$$().$T();
+    window.$Q = window.$$().$Q();
+    window.$F = window.$$().$F;
   }
 
   if (document.addEventListener) { 
     // Mozilla, Opera, Webkit 
-    document.addEventListener("DOMContentLoaded", function () { 
-      document.removeEventListener("DOMContentLoaded", arguments.callee, false); 
-        if(window.onAppResOptions) {
-          setTimeout(function() {
-            init(window);
-          }, 0);
-        } else {
-          console.log("AppRes: Required onAppResOptions() function !!!");
-        }
-      }, false); 
+    var DOMContentLoadedCallee = function () { 
+      // document.removeEventListener("DOMContentLoaded", arguments.callee, false); 
+      document.removeEventListener("DOMContentLoaded", DOMContentLoadedCallee, false); 
+      if(window.onAppResOptions) {
+        setTimeout(function() {
+          init(window);
+        }, 0);
+      } else {
+        console.log("AppRes: Required onAppResOptions() function !!!");
+      }
+    };
+    document.addEventListener("DOMContentLoaded", DOMContentLoadedCallee, false); 
   } 
   else 
   if (document.attachEvent) { 
     // Internet Explorer 
-    document.attachEvent("onreadystatechange", function () { 
+    var onreadystatechangecallee = function () { 
       if (document.readyState === "complete") { 
-        document.detachEvent("onreadystatechange", arguments.callee); 
+        // document.detachEvent("onreadystatechange", arguments.callee); 
+        document.detachEvent("onreadystatechange", onreadystatechangecallee); 
         if(window.onAppResOptions) {
           setTimeout(function() {
             init(window);
@@ -577,9 +690,10 @@
           console.log("AppRes: Required onAppResOptions() function !!!");
         }
       } 
-    }); 
+    };
+    document.attachEvent("onreadystatechange", onreadystatechangecallee); 
   }
-  
+
 })(window);
 
 
