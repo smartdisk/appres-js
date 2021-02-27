@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.15
+ * AppRes JavaScript Library v0.0.16
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -618,6 +618,33 @@ if(window.globalThis==null) {
     }
     return elementSelectAll(window, selector);
   };
+
+  AppRes.prototype.appStyle = function (window, selector, style) {
+    if(window!=appWindow && typeof window === 'object' && typeof selector === 'string') {
+      if(selector) {
+        elementAttr(window, 'style', selector);
+      }
+      return elementAttr(window, 'style');
+    } else {
+      if(window!=null && typeof window === 'string') {
+        style = selector;
+        selector = window;
+        window = appWindow;
+      }
+      var elements = elementSelectAll(window, selector);
+      if(style) {
+        elements.forEach(function (element) {
+          elementAttr(element, 'style', style);
+        });
+      }
+      var styles = [];
+      elements.forEach(function (element) {
+        styles.push(elementAttr(element, 'style'));
+      });
+      return styles;
+    }
+  };
+
   AppRes.prototype.appRemoveClass = function (window, selector, name) {
     if(window!=appWindow && typeof window === 'object' && typeof selector === 'string') {
       removeClassName(window, selector);
