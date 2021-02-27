@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.13
+ * AppRes JavaScript Library v0.0.14
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -7,7 +7,7 @@
  * https://appres.org/license
  *
  * Create Date: 2021.02.07 KST
- * Last Update: 2021.02.21 KST
+ * Last Update: 2021.02.27 KST
  */
 
 if(window.globalThis==null) {
@@ -258,6 +258,7 @@ if(window.globalThis==null) {
       return getItem(window, "appres.ver");
     },
     elementSelectAll = function (window, selector) {
+      if(typeof selector == "object") return [selector];
       return window.document.querySelectorAll(selector);
     },
     addClassName = function (element, name) {
@@ -419,7 +420,7 @@ if(window.globalThis==null) {
         element.setAttribute('style', 'visibility:visible');
       });
     },
-    format = function (args) {
+    formatString = function (args) {
       args = arguments[0];
       args[0] = appString(args[0]);
       return args[0].replace(/{(\d+)}/g, 
@@ -610,12 +611,50 @@ if(window.globalThis==null) {
     }
     return translate(window || appWindow);
   };
-  AppRes.prototype.appSelectAll = function (window, selector) {
+  AppRes.prototype.appSelect = function (window, selector) {
     if(window!=null && typeof window === 'string') {
       selector = window;
       window = appWindow;
     }
     return elementSelectAll(window, selector);
+  };
+  AppRes.prototype.appRemoveClass = function (window, selector, name) {
+    if(window!=appWindow && typeof window === 'object' && typeof selector === 'string') {
+      removeClassName(window, selector);
+    } else {
+      if(window!=null && typeof window === 'string') {
+        name = selector;
+        selector = window;
+        window = appWindow;
+      }
+      var elements = elementSelectAll(window, selector);
+      elements.forEach(function (element) {
+        removeClassName(element, name);
+      });
+    }
+  };
+  AppRes.prototype.appAddClass = function (window, selector, name) {
+    if(window!=appWindow && typeof window === 'object' && typeof selector === 'string') {
+      addClassName(window, selector);
+    } else {
+      if(window!=null && typeof window === 'string') {
+        name = selector;
+        selector = window;
+        window = appWindow;
+      }
+      var elements = elementSelectAll(window, selector);
+      elements.forEach(function (element) {
+        addClassName(element, name);
+      });  
+    }
+  };
+  AppRes.prototype.appOptions = function (opt, val) {
+    if(opt && typeof opt=="object") options = opt;
+    else
+    if(opt && typeof opt=="string" && val) options[opt] = val;
+    else
+    if(opt && typeof opt=="string" && val==null) return options[opt];
+    return options;
   };
     
   AppRes.prototype.$$ = function (a, b, c) {
@@ -634,14 +673,10 @@ if(window.globalThis==null) {
     return self.appTranslate;
   }
   AppRes.prototype.$Q = function () {
-    return self.appSelectAll;
-  }
-
-  AppRes.prototype.format = function () { 
-    return format(arguments);
+    return self.appSelect;
   }
   AppRes.prototype.$F = function () { 
-    return format(arguments);
+    return formatString(arguments);
   }
 
   window.AppRes = AppRes;
