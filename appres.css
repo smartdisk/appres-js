@@ -1,5 +1,5 @@
 /*!
- * AppRes CSS Library v0.0.14
+ * AppRes CSS Library v0.0.15
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -76,10 +76,11 @@
     background-color: transparent;
   }
   .appres-langs .appres-langs-button-small {
-    min-width: 30px;
-    max-width: 30px;
-    min-height: 30px;
-    max-height: 30px;
+    min-width: 25px;
+    max-width: 25px;
+    min-height: 25px;
+    max-height: 25px;
+    padding-top: 10px;
   }
   .appres-langs:hover .appres-langs-button {
     background-color: #7ece71;
