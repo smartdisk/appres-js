@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.16
+ * AppRes JavaScript Library v0.0.17
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -65,6 +65,29 @@ if(window.globalThis==null) {
         if(options.user_excepts.indexOf(element.id)>=0) return true;
       }
       return false;
+    },
+    findPosition = function (window, obj) { 
+      var currenttop = 0; 
+      var currentleft = 0; 
+      if(obj==null) {        
+        obj = window;
+        window = appWindow;
+      }
+      if(typeof obj == 'string') {
+        var objs = elementSelectAll(window, obj);
+        if(objs.length>0) {
+          obj = objs[0];
+        } else {
+          return [currentleft, currenttop]; 
+        }
+      }
+      if (obj.offsetParent) { 
+          do { 
+              currenttop += obj.offsetTop; 
+              currentleft += obj.offsetLeft; 
+          } while ((obj = obj.offsetParent)); 
+      } 
+      return [currentleft, currenttop]; 
     },
     elementText = function (element, text) {
       if (text) {
@@ -259,6 +282,7 @@ if(window.globalThis==null) {
     },
     elementSelectAll = function (window, selector) {
       if(typeof selector == "object") return [selector];
+      if(window==null) return [];
       return window.document.querySelectorAll(selector);
     },
     addClassName = function (element, name) {
@@ -313,8 +337,14 @@ if(window.globalThis==null) {
       if(items_div) {
         if(getElementStyleDisplay(window, items_div)=="none") {
           clearLangsSelector(window);
-          setLangsSelector(window);
+          var selected = setLangsSelector(window);
           items_div.setAttribute('style', "display:block");
+          if(selected) {
+            setTimeout(function(){
+              var items_div = getLangsSelector(window);
+              items_div.scrollTo(0, selected.offsetTop);
+            }, 0);
+          }  
         } else {
           clearLangsSelector(window);
           items_div.setAttribute('style', "display:none");
@@ -330,6 +360,7 @@ if(window.globalThis==null) {
       }
     },
     setLangsSelector = function (window) {
+      var selected = null;
       var items_div = getLangsSelector(window);
       if(items_div) {
         var langs = Object.keys(window.APPRES_LANGS);
@@ -339,6 +370,7 @@ if(window.globalThis==null) {
           lang_div.id = lang;
           if(options.lang==lang) {
             lang_div.className = "selected";
+            selected = lang_div;
           }
           elementText(lang_div, lang_name);
           items_div.appendChild(lang_div);
@@ -358,9 +390,35 @@ if(window.globalThis==null) {
           }
         });
       }
+      return selected;
+    },
+    makeLangsSelector = function (window) {
+      var langs = getLangs(window);
+      if(langs) {
+        if(window.onAppResMakeLangsSelector) {
+          return window.onAppResMakeLangsSelector(langs);
+        }
+        var button = window.document.createElement("button");
+        addClassName(button, options.langs_selector.langs_button);
+        langs.appendChild(button);
+        var div = window.document.createElement("div");
+        addClassName(div, options.langs_selector.langs_items);  
+        langs.appendChild(div);
+      }
+      return langs;  
     },
     initLangsSelector = function (window) {
       var langs_button = getLangsButton(window);
+      if(langs_button==null) {
+        if(getLangs(window)!=null) {
+          makeLangsSelector(window);
+          langs_button = getLangsButton(window);
+        }
+      }
+      if(langs_button==null) {
+        return;
+      }
+
       if(langs_button) {
         if(options.langs_selector.style.button!="auto") {
           addClassName(langs_button, options.langs_selector.langs_button + "-" + options.langs_selector.style.button);
@@ -675,6 +733,9 @@ if(window.globalThis==null) {
       });  
     }
   };
+  AppRes.prototype.appPosition = function (window, selector) {
+    return findPosition(window, selector);
+  }
   AppRes.prototype.appOptions = function (opt, val) {
     if(opt && typeof opt=="object") options = opt;
     else
