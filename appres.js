@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.17
+ * AppRes JavaScript Library v0.0.18
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -33,6 +33,7 @@ if(window.globalThis==null) {
       langs_selector: {
         langs: ".appres-langs",
         langs_button: ".appres-langs-button",  
+        langs_button_color: "white",  
         langs_items: ".appres-langs-items",
         style: {
           button: "auto"
@@ -400,6 +401,7 @@ if(window.globalThis==null) {
         }
         var button = window.document.createElement("button");
         addClassName(button, options.langs_selector.langs_button);
+        addClassName(button, options.langs_selector.langs_button + "-" + options.langs_selector.langs_button_color);
         langs.appendChild(button);
         var div = window.document.createElement("div");
         addClassName(div, options.langs_selector.langs_items);  

@@ -1,5 +1,5 @@
 /*!
- * AppRes CSS Library v0.0.17
+ * AppRes CSS Library v0.0.18
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -71,11 +71,16 @@
     min-height: 40px;
     max-height: 40px;
     font-size: 0px;
-    background-image: url('https://cdn.appres.org/appres-js/appres-lang.png');
     background-position: center;
     background-repeat: no-repeat;
     background-size: contain;
     background-color: transparent;
+  }
+  .appres-langs .appres-langs-button-black {
+    background-image: url('https://cdn.appres.org/appres-js/language-earth-black.png');
+  }
+  .appres-langs .appres-langs-button-white {
+    background-image: url('https://cdn.appres.org/appres-js/language-earth-white.png');
   }
   .appres-langs .appres-langs-button-small {
     min-width: 25px;
