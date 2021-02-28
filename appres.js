@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.20
+ * AppRes JavaScript Library v0.0.21
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -383,7 +383,7 @@ if(window.globalThis==null) {
               setItem(window, "appres.lang", options.lang);
               initLangsSelector(window);
               if(options.langs_all==true) {
-                applyPageAll(window);
+                translate(window);
               } else {
                 window.location.reload();
               }
