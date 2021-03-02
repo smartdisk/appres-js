@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.22
+ * AppRes JavaScript Library v0.0.23
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -41,7 +41,6 @@ if(window.globalThis==null) {
       default_excepts: ["material-icons", "mat-tab-group"],
       user_excepts: []
     },
-    isInitLangsSelector = false,
     loadScript = function (window, url, callback) {
       var script = window.document.createElement("script");
       script.type = 'text/javascript';
@@ -199,17 +198,10 @@ if(window.globalThis==null) {
     },
     appTranslateAsync = function (window, element, retry, callback) {
       if (window.APPRES_STRINGS) {
-        if(isInitLangsSelector==false) {
-          initLangsSelector(window);
-        }
-
-
         if(elementAttr(element, "appres-lang")==options.lang) {
           if(callback) callback(true);
           return;
         }
-
-        // console.log(" " + elementText(element) + "," + element.className);
 
         // innerText
         if(element.childNodes.length==1) {
@@ -456,8 +448,6 @@ if(window.globalThis==null) {
         }          
         if(lang) {
           elementText(langs_button, lang);
-          isInitLangsSelector = true;
-
           var appres_langs = getLangs(window);
           if(appres_langs) {
             appres_langs.setAttribute('style', 'display:block');
@@ -601,6 +591,7 @@ if(window.globalThis==null) {
 
     if (options.cache && appres_langs == true && appres_strings == true) {
       console.log("AppRes: Loaded app string from cached");
+      initLangsSelector(window);
       translate(appWindow);
       if (appWindow.onLoadedAppRes) {
         appWindow.onLoadedAppRes();
@@ -614,6 +605,7 @@ if(window.globalThis==null) {
             setItem(appWindow, "appres.langs", JSON.stringify(window.APPRES_LANGS));
             setItem(appWindow, "appres.strings", JSON.stringify(window.APPRES_STRINGS));
           }
+          initLangsSelector(window);
           translate(appWindow);
           if (appWindow.onLoadedAppRes) {
             appWindow.onLoadedAppRes();
