@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.21
+ * AppRes JavaScript Library v0.0.22
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -18,10 +18,9 @@ if(window.globalThis==null) {
   var
     options = {
       host: "https://appres.org/functions/api",
-      //host: "http://127.0.0.1:5001/appres-org/us-central1/api",
       pkey: "GXYqIgrafjTRatwTB96d",
       akey: "39f031e6-94a0-4e14-b600-82779ec899d7",
-      cmd: "string",
+      cmd: "string-dict",
       target: "js",
       skey: "default",
       lang: "ja-JP",
@@ -120,20 +119,34 @@ if(window.globalThis==null) {
         window = appWindow;
       }
       if (typeof element === "string") {
+        if(window.APPRES_STRINGS && window.APPRES_DICTS) {
+          newtext = window.APPRES_STRINGS[element] || window.APPRES_DICTS[element];
+        } else 
         if(window.APPRES_STRINGS) {
           newtext = window.APPRES_STRINGS[element];
+        } else 
+        if(window.APPRES_DICTS) {
+          newtext = window.APPRES_DICTS[element];
         }
         return newtext || element;
       }
       
+      if (window.APPRES_DICTS) {
+        if (element.hasAttribute('dict')) {
+          newtext = window.APPRES_DICTS[element.getAttribute('dict')];
+        }
+      }
+
       var text = elementText(element);
-      if (window.APPRES_STRINGS) {
-        if (element.hasAttribute('appres')) {
-          newtext = window.APPRES_STRINGS[element.getAttribute('appres')];
+      if (newtext==null && window.APPRES_STRINGS) {
+        if (element.hasAttribute('string')) {
+          newtext = window.APPRES_STRINGS[element.getAttribute('string')];
         } else {
           if (text != null) {
-            element.setAttribute('appres', text);
             newtext = window.APPRES_STRINGS[text];
+            if(newtext) {
+              element.setAttribute('string', text);
+            }
           }
         }
       }
