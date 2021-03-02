@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.23
+ * AppRes JavaScript Library v0.0.24
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -111,6 +111,15 @@ if(window.globalThis==null) {
       } 
       return element.getAttribute(attr);
     },
+    objectString = function (text) {
+      if(text==null) return null;
+      if (typeof text === "object") {
+        var _newtext = text[options.lang];
+        if (_newtext == "") _newtext = text["default"];
+        text = _newtext;
+      }
+      return text;
+    },
     appString = function (window, element) {
       var newtext = null;
       if (typeof window === "string") {
@@ -127,7 +136,7 @@ if(window.globalThis==null) {
         if(window.APPRES_DICTS) {
           newtext = window.APPRES_DICTS[element];
         }
-        return newtext || element;
+        return objectString(newtext) || element;
       }
       
       if (window.APPRES_DICTS) {
@@ -150,13 +159,7 @@ if(window.globalThis==null) {
         }
       }
       if (newtext) {
-        if (typeof newtext === "object") {
-          var _newtext = newtext[options.lang];
-          if (_newtext == "") {
-            _newtext = newtext["default"];
-          }
-          newtext = _newtext;
-        }
+        newtext = objectString(newtext);
       } else {
         if (window.APPRES_STRINGS) {
           console.log("AppRes:" + options.lang + ":" + text);
@@ -180,13 +183,7 @@ if(window.globalThis==null) {
         }
       }
       if (newval) {
-        if (typeof newtext === "object") {
-          var _newval = newval[options.lang];
-          if (_newval == "") {
-            _newval = newval["default"];
-          }
-          newval = _newval;
-        }
+        newval = objectString(newval);
       } else {
         if (window.APPRES_STRINGS) {
           console.log("AppRes:" + options.lang + ":" + val);
