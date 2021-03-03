@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.24
+ * AppRes JavaScript Library v0.0.25
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -590,8 +590,8 @@ if(window.globalThis==null) {
       console.log("AppRes: Loaded app string from cached");
       initLangsSelector(window);
       translate(appWindow);
-      if (appWindow.onLoadedAppRes) {
-        appWindow.onLoadedAppRes();
+      if (appWindow.onAppResReady) {
+        appWindow.onAppResReady();
       }
     } else {
       loadScript(appWindow, appres_url,
@@ -604,8 +604,8 @@ if(window.globalThis==null) {
           }
           initLangsSelector(window);
           translate(appWindow);
-          if (appWindow.onLoadedAppRes) {
-            appWindow.onLoadedAppRes();
+          if (appWindow.onAppResReady) {
+            appWindow.onAppResReady();
           }
         }
       );
