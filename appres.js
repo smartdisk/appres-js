@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.26
+ * AppRes JavaScript Library v0.0.27
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -7,7 +7,7 @@
  * https://appres.org/license
  *
  * Create Date: 2021.02.07 KST
- * Last Update: 2021.02.27 KST
+ * Last Update: 2021.03.04 KST
  */
 
 if(window.globalThis==null) {
@@ -454,7 +454,9 @@ if(window.globalThis==null) {
           toggleLangsSelector(window);
         }
         langs_button.onblur = function(e) {
-          // clearLangsSelector(window);
+          setTimeout(function(){
+            clearLangsSelector(window);
+          }, 300);
         }
       }
     },
