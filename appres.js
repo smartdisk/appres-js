@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.25
+ * AppRes JavaScript Library v0.0.26
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -350,7 +350,6 @@ if(window.globalThis==null) {
           }  
         } else {
           clearLangsSelector(window);
-          items_div.setAttribute('style', "display:none");
         }  
       }
     },
@@ -360,6 +359,7 @@ if(window.globalThis==null) {
         while (items_div.firstChild) {
           items_div.removeChild(items_div.lastChild);
         }        
+        items_div.setAttribute('style', "display:none");
       }
     },
     setLangsSelector = function (window) {
@@ -452,7 +452,10 @@ if(window.globalThis==null) {
         }
         langs_button.onclick = function(e) {
           toggleLangsSelector(window);
-        }  
+        }
+        langs_button.onblur = function(e) {
+          clearLangsSelector(window);
+        }
       }
     },
     translate = function (window, sels) {
