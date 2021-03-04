@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.29
+ * AppRes JavaScript Library v0.0.30
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -462,11 +462,6 @@ if(window.globalThis==null) {
         }
         langs_button.onclick = function(e) {
           toggleLangsSelector(window);
-        }
-        langs_button.onmouseout = function(e) {
-          setTimeout(function(){
-            clearLangsSelector(window);
-          }, 300);
         }
         langs_button.onblur = function(e) {
           setTimeout(function(){
