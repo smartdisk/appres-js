@@ -31,7 +31,7 @@
   min-width: 160px;
   cursor: pointer;
   border: none;
-  background-color: #4CAF50;
+  background-color: #4CAF50;  
 }
 .appres-langs:hover .appres-langs-button {
   background-color: #3e8e41;

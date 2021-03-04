@@ -418,6 +418,7 @@ if(window.globalThis==null) {
         var button = window.document.createElement("button");
         addClassName(button, options.langs_selector.langs_button);
         addClassName(button, options.langs_selector.langs_button + "-" + options.langs_selector.langs_button_color);
+
         langs.appendChild(button);
         var div = window.document.createElement("div");
         addClassName(div, options.langs_selector.langs_items);  
@@ -467,6 +468,7 @@ if(window.globalThis==null) {
         langs_button.onclick = function(e) {
           toggleLangsSelector(window);
         }
+    
         langs_button.onblur = function(e) {
           setTimeout(function(){
             clearLangsSelector(window);
