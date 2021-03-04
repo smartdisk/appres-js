@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.27
+ * AppRes JavaScript Library v0.0.28
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -464,10 +464,14 @@ if(window.globalThis==null) {
       var elements = (sels==null) ? elementSelectAll(window, ".appres") : elementSelectAll(window, ".appres " + sels);
       elements.forEach(function (element) {
         appTranslateAsync(window, element, 0, function (success) {
-          if(success && elementAttr(element, "appres-lang")==null) {
+          var appres_lang = elementAttr(element, "appres-lang");
+          if(success && appres_lang==null) {
             if (options.visibility == "hidden") {
               element.setAttribute('style', 'visibility:visible');
             }  
+            elementAttr(element, "appres-lang", options.lang);
+          } else
+          if(success && appres_lang!=options.lang) {
             elementAttr(element, "appres-lang", options.lang);
           }
         });
