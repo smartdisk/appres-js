@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.30
+ * AppRes JavaScript Library v0.0.31
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -393,6 +393,10 @@ if(window.globalThis==null) {
                 if (options.title_trans) title_translate(window);
                 if (options.onLanguageChange) {
                   options.onLanguageChange();
+                }
+                var langs_button = getLangsButton(window);
+                if(langs_button && langs_button.blur) {
+                  langs_button.blur();
                 }
               } else {
                 window.location.reload();
