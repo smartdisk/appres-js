@@ -454,7 +454,7 @@ if(window.globalThis==null) {
           toggleLangsSelector(window);
         }
         langs_button.onblur = function(e) {
-          clearLangsSelector(window);
+          // clearLangsSelector(window);
         }
       }
     },
