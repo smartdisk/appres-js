@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.28
+ * AppRes JavaScript Library v0.0.29
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -28,6 +28,7 @@ if(window.globalThis==null) {
       time: 25,
       cache: true,
       visibility: "hidden",
+      title_trans: true,
       langs_all: false,
       langs_selector: {
         langs: ".appres-langs",
@@ -39,7 +40,10 @@ if(window.globalThis==null) {
         }
       },
       default_excepts: ["material-icons", "mat-tab-group"],
-      user_excepts: []
+      user_excepts: [],
+      onReady: null,
+      onLanguageChange: null,
+      onMakeLangsSelector: null
     },
     loadScript = function (window, url, callback) {
       var script = window.document.createElement("script");
@@ -386,6 +390,10 @@ if(window.globalThis==null) {
               initLangsSelector(window);
               if(options.langs_all==true) {
                 translate(window);
+                if (options.title_trans) title_translate(window);
+                if (options.onLanguageChange) {
+                  options.onLanguageChange();
+                }
               } else {
                 window.location.reload();
               }
@@ -398,8 +406,10 @@ if(window.globalThis==null) {
     makeLangsSelector = function (window) {
       var langs = getLangs(window);
       if(langs) {
-        if(window.onAppResMakeLangsSelector) {
-          return window.onAppResMakeLangsSelector(langs);
+        if(options.onMakeLangsSelector) {
+          if(options.onMakeLangsSelector(langs)==true) {
+            return langs;
+          }
         }
         var button = window.document.createElement("button");
         addClassName(button, options.langs_selector.langs_button);
@@ -453,12 +463,23 @@ if(window.globalThis==null) {
         langs_button.onclick = function(e) {
           toggleLangsSelector(window);
         }
+        langs_button.onmouseout = function(e) {
+          setTimeout(function(){
+            clearLangsSelector(window);
+          }, 300);
+        }
         langs_button.onblur = function(e) {
           setTimeout(function(){
             clearLangsSelector(window);
           }, 300);
         }
       }
+    },
+    title_translate = function (window) {
+      if(window.appres_title == null) {
+        window.appres_title = window.document.title;
+      }
+      window.document.title = appString(window.appres_title);
     },
     translate = function (window, sels) {
       var elements = (sels==null) ? elementSelectAll(window, ".appres") : elementSelectAll(window, ".appres " + sels);
@@ -517,7 +538,10 @@ if(window.globalThis==null) {
       if (_options.target) options.target = _options.target;
       if (_options.skey) options.skey = _options.skey;
       if (_options.lang) options.lang = _options.lang;
-      if (_options.langs_all) options.langs_all = _options.langs_all;
+
+      if (_options.langs_all != null) options.langs_all = _options.langs_all;
+      if (_options.title_trans != null) options.title_trans = _options.title_trans;
+      
       if (_options.retry != null) options.retry = _options.retry;
       if (_options.time != null) options.time = _options.time;
       if (_options.cache != null) options.cache = _options.cache;
@@ -533,6 +557,11 @@ if(window.globalThis==null) {
           }
         } 
       } 
+
+      // event functions
+      if (_options.onReady != null) options.onReady = _options.onReady;
+      if (_options.onLanguageChange != null) options.onLanguageChange = _options.onLanguageChange;
+      if (_options.onMakeLangsSelector != null) options.onMakeLangsSelector = _options.onMakeLangsSelector;
     }
 
     if (options.visibility == "hidden") {
@@ -597,10 +626,11 @@ if(window.globalThis==null) {
 
     if (options.cache && appres_langs == true && appres_strings == true) {
       console.log("AppRes: Loaded app string from cached");
-      initLangsSelector(window);
+      initLangsSelector(appWindow);
       translate(appWindow);
-      if (appWindow.onAppResReady) {
-        appWindow.onAppResReady();
+      if (options.title_trans) title_translate(appWindow);
+      if (options.onReady) {
+        options.onReady();
       }
     } else {
       loadScript(appWindow, appres_url,
@@ -611,10 +641,11 @@ if(window.globalThis==null) {
             setItem(appWindow, "appres.langs", JSON.stringify(window.APPRES_LANGS));
             setItem(appWindow, "appres.strings", JSON.stringify(window.APPRES_STRINGS));
           }
-          initLangsSelector(window);
+          initLangsSelector(appWindow);
           translate(appWindow);
-          if (appWindow.onAppResReady) {
-            appWindow.onAppResReady();
+          if (options.title_trans) title_translate(appWindow);
+          if (options.onReady) {
+            options.onReady();
           }
         }
       );
