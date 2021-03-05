@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.35
+ * AppRes JavaScript Library v0.0.36
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -531,6 +531,23 @@ if(window.globalThis==null) {
             return typeof(args[num]) != undefined ? args[num] : match; 
         }); 
     },
+    langsSelectorSmallButton = function (window, retry) {
+      if(window==null) window = appWindow;
+      var button_name = options.langs_selector.langs_button;
+      var button = elementSelectAll(window, button_name);
+      if(button && button.length>0) {
+        button = button[0];
+        addClassName(button, "appres-langs-button-small");
+      } else {
+        if(retry==null) retry = 1;
+        else retry ++;
+        if(retry<50) {
+          setTimeout(function(){
+            langsSelectorSmallButton(window, retry);
+          }, 10);
+        }
+      }
+    },  
     self = null;
 
   var appWindow = window;
@@ -793,21 +810,7 @@ if(window.globalThis==null) {
     }
   };
   AppRes.prototype.appLangsSelectorSmallButton = function (window, retry) {
-    if(window==null) window = appWindow;
-    var button_name = options.langs_selector.langs_button;
-    var button = elementSelectAll(window, button_name);
-    if(button && button.length>0) {
-      button = button[0];
-      $$().appAddClass(button, "appres-langs-button-small");
-    } else {
-      if(retry==null) retry = 1;
-      else retry ++;
-      if(retry<50) {
-        setTimeout(function(){
-          appLangsSelectorSmallButton(window, retry);
-        }, 10);
-      }
-    }
+    langsSelectorSmallButton(window, 0);
   };
   AppRes.prototype.appPosition = function (window, selector) {
     return findPosition(window, selector);
