@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.34
+ * AppRes JavaScript Library v0.0.35
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -792,13 +792,21 @@ if(window.globalThis==null) {
       });  
     }
   };
-  AppRes.prototype.appLangsSelectorSmallButton = function (window) {
+  AppRes.prototype.appLangsSelectorSmallButton = function (window, retry) {
     if(window==null) window = appWindow;
     var button_name = options.langs_selector.langs_button;
     var button = elementSelectAll(window, button_name);
     if(button && button.length>0) {
       button = button[0];
       $$().appAddClass(button, "appres-langs-button-small");
+    } else {
+      if(retry==null) retry = 1;
+      else retry ++;
+      if(retry<50) {
+        setTimeout(function(){
+          appLangsSelectorSmallButton(window, retry);
+        }, 10);
+      }
     }
   };
   AppRes.prototype.appPosition = function (window, selector) {
