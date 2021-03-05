@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.32
+ * AppRes JavaScript Library v0.0.34
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -344,6 +344,12 @@ if(window.globalThis==null) {
       if(items_div) {
         if(getElementStyleDisplay(window, items_div)=="none") {
           clearLangsSelector(window);
+
+          var appres_langs_button = getLangsButton(window);
+          if(appres_langs_button) {
+            addClassName(appres_langs_button, options.langs_selector.langs_button + "-active");
+          }
+
           var selected = setLangsSelector(window);
           items_div.setAttribute('style', "display:block");
           if(selected) {
@@ -358,6 +364,11 @@ if(window.globalThis==null) {
       }
     },
     clearLangsSelector = function (window) {
+      var appres_langs_button = getLangsButton(window);
+      if(appres_langs_button) {
+        removeClassName(appres_langs_button, options.langs_selector.langs_button + "-active");
+      }
+
       var items_div = getLangsSelector(window);
       if(items_div) {
         while (items_div.firstChild) {
@@ -779,6 +790,15 @@ if(window.globalThis==null) {
       elements.forEach(function (element) {
         addClassName(element, name);
       });  
+    }
+  };
+  AppRes.prototype.appLangsSelectorSmallButton = function (window) {
+    if(window==null) window = appWindow;
+    var button_name = options.langs_selector.langs_button;
+    var button = elementSelectAll(window, button_name);
+    if(button && button.length>0) {
+      button = button[0];
+      $$().appAddClass(button, "appres-langs-button-small");
     }
   };
   AppRes.prototype.appPosition = function (window, selector) {
