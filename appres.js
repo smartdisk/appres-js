@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.39
+ * AppRes JavaScript Library v0.0.40
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -17,14 +17,15 @@ if(window.globalThis==null) {
 (function (window) {
   var
     options = {
-      host: "https://appres.org/functions/api",
-      //host: "http://127.0.0.1:5001/appres-org/us-central1/api",
+      //host: "https://appres.org/functions/api",
+      host: "http://127.0.0.1:5001/appres-org/us-central1/api",
       pkey: "GXYqIgrafjTRatwTB96d",
       akey: "39f031e6-94a0-4e14-b600-82779ec899d7",
       cmd: "string-dict",
       target: "js",
       skey: "default",
       lang: "ja-JP",
+      hash: null,
       retry: 50,
       time: 25,
       cache: true,
@@ -630,6 +631,8 @@ if(window.globalThis==null) {
       if (_options.skey) options.skey = _options.skey;
       if (_options.lang) options.lang = _options.lang;
 
+      if (_options.hash != null) options.hash = _options.hash;
+
       if (_options.langs_all != null) options.langs_all = _options.langs_all;
       if (_options.title_trans != null) options.title_trans = _options.title_trans;
       
@@ -666,6 +669,9 @@ if(window.globalThis==null) {
       "&cmd=" + options.cmd +
       "&target=" + options.target +
       "&skey=" + options.skey;
+    if (options.hash != null) {
+      url += "&hash=" + options.hash;
+    }
     if (options.langs_all != true) {
       url += "&lang=" + options.lang;
     }
