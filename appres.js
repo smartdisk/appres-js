@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.37
+ * AppRes JavaScript Library v0.0.38
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -409,8 +409,9 @@ if(window.globalThis==null) {
                   options.onLanguageChange();
                 }
                 var langs_button = getLangsButton(window);
-                if(langs_button && langs_button.blur) {
-                  langs_button.blur();
+                if(langs_button) {
+                  removeClassName(appres_langs_button, options.langs_selector.langs_button + "-active");
+                  if(langs_button.blur) langs_button.blur();
                 }
               } else {
                 window.location.reload();
@@ -448,10 +449,6 @@ if(window.globalThis==null) {
           langs_button = getLangsButton(window);
         }
       }
-      if(langs_button==null) {
-        return;
-      }
-
       if(langs_button) {
         if(options.langs_selector.style.button!="auto") {
           addClassName(langs_button, options.langs_selector.langs_button + "-" + options.langs_selector.style.button);
