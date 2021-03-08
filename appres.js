@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.42
+ * AppRes JavaScript Library v0.0.43
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -451,10 +451,10 @@ if(window.globalThis==null) {
       return text;
     },
     keyString = function (keystr) {
-      if(options.hash) {
+      if(options.hash && keystr!="") {
         keystr = options.hash=="md5" ? md5.calc(keystr) : (options.hash=="sha1" ? sha1.calc(keystr) : keystr);
       }
-      return keystr;
+      return keystr || "";
     },
     appString = function (window, element) {
       var newtext = null;
@@ -466,14 +466,16 @@ if(window.globalThis==null) {
 
       if (typeof element === "string") {        
         keystr = keyString(element);
-        if(window.APPRES_STRINGS && window.APPRES_DICTS) {
-          newtext = window.APPRES_STRINGS[keystr] || window.APPRES_DICTS[keystr];
-        } else 
-        if(window.APPRES_STRINGS) {
-          newtext = window.APPRES_STRINGS[keystr];
-        } else 
-        if(window.APPRES_DICTS) {
-          newtext = window.APPRES_DICTS[keystr];
+        if(keystr!="") {
+          if(window.APPRES_STRINGS && window.APPRES_DICTS) {
+            newtext = window.APPRES_STRINGS[keystr] || window.APPRES_DICTS[keystr];
+          } else 
+          if(window.APPRES_STRINGS) {
+            newtext = window.APPRES_STRINGS[keystr];
+          } else 
+          if(window.APPRES_DICTS) {
+            newtext = window.APPRES_DICTS[keystr];
+          }            
         }
         return objectString(newtext) || element;
       }
@@ -481,7 +483,9 @@ if(window.globalThis==null) {
       if (window.APPRES_DICTS) {
         if (element.hasAttribute('dict')) {
           keystr = keyString(element.getAttribute('dict'));
-          newtext = window.APPRES_DICTS[keystr];
+          if(keystr!="") {
+            newtext = window.APPRES_DICTS[keystr];
+          }
         }
       }
 
@@ -489,13 +493,15 @@ if(window.globalThis==null) {
       if (newtext==null && window.APPRES_STRINGS) {
         if (element.hasAttribute('string')) {
           keystr = keyString(element.getAttribute('string'));
-          newtext = window.APPRES_STRINGS[keystr];
+          if(keystr!="") newtext = window.APPRES_STRINGS[keystr];
         } else {
           if (text != null) {
             keystr = keyString(text);
-            newtext = window.APPRES_STRINGS[keystr];
-            if(newtext) {
-              element.setAttribute('string', text);
+            if(keystr!="") {
+              newtext = window.APPRES_STRINGS[keystr];
+              if(newtext) {
+                element.setAttribute('string', text);
+              }  
             }
           }
         }
@@ -518,12 +524,14 @@ if(window.globalThis==null) {
       if (window.APPRES_STRINGS) {
         if (element.hasAttribute('appres-'+attr)) {
           keystr = keyString(element.getAttribute('appres-'+attr));
-          newval = window.APPRES_STRINGS[keystr];
+          if(keystr!="") newval = window.APPRES_STRINGS[keystr];
         } else {
           if (val != null) {
             element.setAttribute('appres-'+attr, val);
             keystr = keyString(val);
-            newval = window.APPRES_STRINGS[keystr];
+            if(keystr!="") {
+              newval = window.APPRES_STRINGS[keystr];
+            }
           }
         }
       }
@@ -833,9 +841,21 @@ if(window.globalThis==null) {
       }
       window.document.title = appString(window.appres_title);
     },
+    reset = function (window, sels) {
+      var elements = (sels==null) ? elementSelectAll(window, ".appres") : elementSelectAll(window, ".appres " + sels);
+      elements.forEach(function (element) {
+        element.removeAttribute("appres-lang");
+      });
+    },
     translate = function (window, sels) {
       var elements = (sels==null) ? elementSelectAll(window, ".appres") : elementSelectAll(window, ".appres " + sels);
       elements.forEach(function (element) {
+        var image = elementAttr(element, "image");
+        if(image) {
+          console.log(">>>" + image);
+
+        }
+
         appTranslateAsync(window, element, 0, function (success) {
           var appres_lang = elementAttr(element, "appres-lang");
           if(success && appres_lang==null) {
@@ -1068,7 +1088,12 @@ if(window.globalThis==null) {
     }
     if(delay!=null && typeof delay === 'string') {
       if(delay2!=null && typeof delay2 === 'number') {
-        setTimeout(function(){translate(window || appWindow, delay)}, delay2);
+        if(delay2==-1) {
+          reset(window || appWindow, delay);
+          translate(window || appWindow, delay);
+        } else {
+          setTimeout(function(){translate(window || appWindow, delay)}, delay2);
+        }
         return;
       }
       return translate(window || appWindow, delay);
@@ -1079,9 +1104,14 @@ if(window.globalThis==null) {
       window = null;
     }
     if(delay!=null && typeof delay === 'number') {
-      setTimeout(function(){
-        return translate(window || appWindow);
-      }, delay);
+      if(delay==-1) {
+        reset(window || appWindow);
+        translate(window || appWindow);
+      } else {
+        setTimeout(function(){
+          translate(window || appWindow);
+        }, delay);  
+      }
       return;
     }
     return translate(window || appWindow);
