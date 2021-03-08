@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.43
+ * AppRes JavaScript Library v0.0.44
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -845,6 +845,7 @@ if(window.globalThis==null) {
       var elements = (sels==null) ? elementSelectAll(window, ".appres") : elementSelectAll(window, ".appres " + sels);
       elements.forEach(function (element) {
         element.removeAttribute("appres-lang");
+        element.removeAttribute("string");
       });
     },
     translate = function (window, sels) {
