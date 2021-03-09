@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.44
+ * AppRes JavaScript Library v0.0.45
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -7,7 +7,7 @@
  * https://appres.org/license
  *
  * Create Date: 2021.02.07 KST
- * Last Update: 2021.03.04 KST
+ * Last Update: 2021.03.09 KST
  */
 
 
@@ -491,8 +491,8 @@ if(window.globalThis==null) {
 
       var text = elementText(element);
       if (newtext==null && window.APPRES_STRINGS) {
-        if (element.hasAttribute('string')) {
-          keystr = keyString(element.getAttribute('string'));
+        if (element.hasAttribute('string') || element.hasAttribute('string-text')) {
+          keystr = keyString(element.getAttribute('string') || element.getAttribute('string-text'));
           if(keystr!="") newtext = window.APPRES_STRINGS[keystr];
         } else {
           if (text != null) {
@@ -500,7 +500,7 @@ if(window.globalThis==null) {
             if(keystr!="") {
               newtext = window.APPRES_STRINGS[keystr];
               if(newtext) {
-                element.setAttribute('string', text);
+                element.setAttribute('string-text', text);
               }  
             }
           }
@@ -845,7 +845,7 @@ if(window.globalThis==null) {
       var elements = (sels==null) ? elementSelectAll(window, ".appres") : elementSelectAll(window, ".appres " + sels);
       elements.forEach(function (element) {
         element.removeAttribute("appres-lang");
-        element.removeAttribute("string");
+        element.removeAttribute("string-text");
       });
     },
     translate = function (window, sels) {
