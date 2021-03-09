@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.45
+ * AppRes JavaScript Library v0.0.46
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -434,6 +434,17 @@ if(window.globalThis==null) {
       }
       return null;
     },
+    elementHTML = function (element, html) {
+      if (html) {
+        if (element.innerHTML) {
+          element.innerHTML = html;
+          return element.innerHTML;
+        }
+      } else {
+        if (element.innerHTML) return element.innerHTML;
+      }
+      return null;
+    },
     elementAttr = function (element, attr, val) {
       if (val) {
         element.setAttribute(attr, val);
@@ -463,7 +474,6 @@ if(window.globalThis==null) {
         element = window;
         window = appWindow;
       }
-
       if (typeof element === "string") {        
         keystr = keyString(element);
         if(keystr!="") {
@@ -489,19 +499,21 @@ if(window.globalThis==null) {
         }
       }
 
-      var text = elementText(element);
       if (newtext==null && window.APPRES_STRINGS) {
-        if (element.hasAttribute('string') || element.hasAttribute('string-text')) {
-          keystr = keyString(element.getAttribute('string') || element.getAttribute('string-text'));
+        if (element.hasAttribute('string')) {
+          keystr = keyString(element.getAttribute('string'));
+          if(keystr!="") newtext = window.APPRES_STRINGS[keystr];
+        } else
+        if (element.hasAttribute('appres-key')) {
+          keystr = element.getAttribute('appres-key') || "";
           if(keystr!="") newtext = window.APPRES_STRINGS[keystr];
         } else {
+          var text = elementText(element);
           if (text != null) {
             keystr = keyString(text);
             if(keystr!="") {
+              element.setAttribute('appres-key', keystr);
               newtext = window.APPRES_STRINGS[keystr];
-              if(newtext) {
-                element.setAttribute('string-text', text);
-              }  
             }
           }
         }
@@ -510,12 +522,74 @@ if(window.globalThis==null) {
         newtext = objectString(newtext);
       } else {
         if (window.APPRES_STRINGS) {
-          console.log("AppRes:" + options.lang + ":" + text);
+          console.log("AppRes:" + options.lang + ":" + elementText(element));
         } else {
-          console.log("AppRes:" + options.lang + ":" + text + " " + "(Not found APPRES_STRINGS!!!)");
+          console.log("AppRes:" + options.lang + ":" + elementText(element) + " " + "(Not found APPRES_STRINGS!!!)");
         }
       }
       return newtext;
+    },
+    appHTML = function (window, element) {
+      var newhtml = null;
+      var keystr = null;
+      if (typeof window === "string") {
+        element = window;
+        window = appWindow;
+      }
+      if (typeof element === "string") {        
+        keystr = keyString(element);
+        if(keystr!="") {
+          if(window.APPRES_STRINGS && window.APPRES_DICTS) {
+            newhtml = window.APPRES_STRINGS[keystr] || window.APPRES_DICTS[keystr];
+          } else 
+          if(window.APPRES_STRINGS) {
+            newhtml = window.APPRES_STRINGS[keystr];
+          } else 
+          if(window.APPRES_DICTS) {
+            newhtml = window.APPRES_DICTS[keystr];
+          }            
+        }
+        return objectString(newhtml) || element;
+      }
+      
+      if (window.APPRES_DICTS) {
+        if (element.hasAttribute('dict')) {
+          keystr = keyString(element.getAttribute('dict'));
+          if(keystr!="") {
+            newhtml = window.APPRES_DICTS[keystr];
+          }
+        }
+      }
+
+      if (newhtml==null && window.APPRES_STRINGS) {
+        if (element.hasAttribute('string')) {
+          keystr = keyString(element.getAttribute('string'));
+          if(keystr!="") newhtml = window.APPRES_STRINGS[keystr];
+        } else
+        if (element.hasAttribute('appres-key')) {
+          keystr = element.getAttribute('appres-key') || "";
+          if(keystr!="") newhtml = window.APPRES_STRINGS[keystr];
+        } else {
+          var html = elementHTML(element);
+          if (html != null) {
+            keystr = keyString(html);
+            if(keystr!="") {
+              element.setAttribute('appres-key', keystr);
+              newhtml = window.APPRES_STRINGS[keystr];
+            }
+          }
+        }
+      }
+      if (newhtml) {
+        newhtml = objectString(newhtml);
+      } else {
+        if (window.APPRES_STRINGS) {
+          console.log("AppRes:" + options.lang + ":" + elementHTML(element));
+        } else {
+          console.log("AppRes:" + options.lang + ":" + elementHTML(element) + " " + "(Not found APPRES_STRINGS!!!)");
+        }
+      }
+      return newhtml;
     },
     appAttr = function (window, element, attr) {
       var newval = null;
@@ -554,11 +628,19 @@ if(window.globalThis==null) {
         }
 
         // innerText
-        if(element.childNodes.length==1) {
-          if(elementText(element)!=null) {
-            if(!isExpects(element)) {
-              elementText(element, appString(window, element) || elementText(element));
+        if(element.childNodes.length==1 || (element.childNodes.length>1 && element.hasAttribute("appres"))) {
+          if(!isExpects(element)) {
+            let appres = "text";
+            if(element.childNodes.length>1) {
+              // 리액트 샘플의 Edit... 와 같이 복합적으로 있는 문장에 대한 처리
+              appres = element.getAttribute("appres");
             }
+            if(appres=="text") {
+              elementText(element, appString(window, element) || elementText(element));
+            } else
+            if(appres=="html") {
+              elementHTML(element, appHTML(window, element) || elementHTML(element));
+            }            
           }
         }
 
@@ -835,18 +917,18 @@ if(window.globalThis==null) {
         }
       }
     },
+    reset = function (window, sels) {
+      var elements = (sels==null) ? elementSelectAll(window, ".appres") : elementSelectAll(window, ".appres " + sels);
+      elements.forEach(function (element) {
+        element.removeAttribute("appres-lang");
+        element.removeAttribute("appres-key");
+      });
+    },
     title_translate = function (window) {
       if(window.appres_title == null) {
         window.appres_title = window.document.title;
       }
       window.document.title = appString(window.appres_title);
-    },
-    reset = function (window, sels) {
-      var elements = (sels==null) ? elementSelectAll(window, ".appres") : elementSelectAll(window, ".appres " + sels);
-      elements.forEach(function (element) {
-        element.removeAttribute("appres-lang");
-        element.removeAttribute("string-text");
-      });
     },
     translate = function (window, sels) {
       var elements = (sels==null) ? elementSelectAll(window, ".appres") : elementSelectAll(window, ".appres " + sels);
