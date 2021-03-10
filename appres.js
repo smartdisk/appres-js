@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.46
+ * AppRes JavaScript Library v0.0.47
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -339,7 +339,8 @@ if(window.globalThis==null) {
 
   var
     options = {
-      host: "https://appres.org/functions/api",
+      host: "https://us-central1-appres-org.cloudfunctions.net/api",
+      // host: "https://appres.org/functions/api",
       // host: "http://127.0.0.1:5001/appres-org/us-central1/api",
       pkey: "GXYqIgrafjTRatwTB96d",
       akey: "39f031e6-94a0-4e14-b600-82779ec899d7",
@@ -627,32 +628,36 @@ if(window.globalThis==null) {
           return;
         }
 
-        // innerText
-        if(element.childNodes.length==1 || (element.childNodes.length>1 && element.hasAttribute("appres"))) {
-          if(!isExpects(element)) {
-            let appres = "text";
-            if(element.childNodes.length>1) {
-              // 리액트 샘플의 Edit... 와 같이 복합적으로 있는 문장에 대한 처리
-              appres = element.getAttribute("appres");
-            }
-            if(appres=="text") {
-              elementText(element, appString(window, element) || elementText(element));
-            } else
-            if(appres=="html") {
-              elementHTML(element, appHTML(window, element) || elementHTML(element));
-            }            
+        // innerText, innerHTML
+        if(!isExpects(element)) {
+          var attrs = ["text"];
+          if(element.hasAttribute("appres")) {
+            attrs = element.getAttribute("appres").split(/\s* |,\s/);
           }
+
+          if(attrs.indexOf("text")>=0) {
+            elementText(element, appString(window, element) || elementText(element));
+          } else
+          if(attrs.indexOf("html")>=0) {
+            elementHTML(element, appHTML(window, element) || elementHTML(element));
+          }
+
+          // attributes
+          var attr = 'title';
+          if(elementAttr(element, attr)) {
+            elementAttr(element, attr, appAttr(window, element, attr) || elementAttr(element, attr));
+          }
+
+          attr = 'href';
+          if(attrs.indexOf(attr)>=0 && elementAttr(element, attr)) {
+            elementAttr(element, attr, appAttr(window, element, attr) || elementAttr(element, attr));
+          }
+
+          if (window.onChangedAppRes) {
+            window.onChangedAppRes(element, true);
+          }          
         }
 
-        // attributes
-        var attr = 'title';
-        if(elementAttr(element, attr)) {
-          elementAttr(element, attr, appAttr(window, element, attr) || elementAttr(element, attr));
-        }
-
-        if (window.onChangedAppRes) {
-          window.onChangedAppRes(element, true);
-        }
         if (callback) {
           callback(true);
         }
