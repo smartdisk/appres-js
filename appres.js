@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.47
+ * AppRes JavaScript Library v0.0.48
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -7,7 +7,7 @@
  * https://appres.org/license
  *
  * Create Date: 2021.02.07 KST
- * Last Update: 2021.03.09 KST
+ * Last Update: 2021.03.11 KST
  */
 
 
@@ -16,6 +16,52 @@ if(window.globalThis==null) {
 }
 
 (function (window) {
+  window.APPRES = {
+    appEvents: {
+      onReady: [],
+      onLanguageChange: [],
+      onLangsSelector: [],
+      add: function(name, event) {
+        if(this[name] == null) this[name] = [];
+        if(this[name].indexOf(event)<0) {
+          this[name].push(event);
+        }
+      },
+      remove: function(name, event) {
+        if(this[name] == null) this[name] = [];
+        if(event==null) {
+          this[name] = [];
+        } else {
+          while(this[name].indexOf(event)>=0) {
+            this[name].splice(this[name].indexOf(event), 1);
+          }  
+        }
+      },
+      get: function(name) {
+        if(this[name] == null) this[name] = [];
+        return this[name];
+      }
+    }
+  };
+  
+  var AppEvents = function() {
+    var Event = (function(){
+      function Event() { }
+      return Event;
+    }());
+    Event.prototype.addEvent = function (name, event) {
+      window.APPRES.appEvents.add(name, event);
+    };
+    Event.prototype.removeEvent = function (name, event) {
+      window.APPRES.appEvents.remove(name, event);
+    };
+    Event.prototype.getEvents = function (name) {
+      return window.APPRES.appEvents.get(name);
+    };
+    return new Event();
+  };
+  window.$$ = AppEvents;
+
 
   var SHA1 = (function () {      
     'use strict'; 
@@ -365,10 +411,7 @@ if(window.globalThis==null) {
         }
       },
       default_excepts: ["material-icons", "mat-tab-group"],
-      user_excepts: [],
-      onReady: null,
-      onLanguageChange: null,
-      onMakeLangsSelector: null
+      user_excepts: []
     },
     md5 = new MD5(),
     sha1 = new SHA1(),
@@ -844,10 +887,10 @@ if(window.globalThis==null) {
                 if(langs_button) {
                   if(langs_button.blur) langs_button.blur();
                   removeClassName(langs_button, options.langs_selector.langs_button + "-active");
-                }
-                if (options.onLanguageChange) {
-                  options.onLanguageChange();
-                }
+                }          
+                appEvents.onLanguageChange.forEach(function (_onLanguageChange){
+                  _onLanguageChange(self);
+                });
               } else {
                 window.location.reload();
               }
@@ -860,11 +903,12 @@ if(window.globalThis==null) {
     makeLangsSelector = function (window) {
       var langs = getLangs(window);
       if(langs) {
-        if(options.onMakeLangsSelector) {
-          if(options.onMakeLangsSelector(langs)==true) {
-            return langs;
-          }
-        }
+        var _proced = false;
+        appEvents.onLangsSelector.forEach(function (_onLangsSelector) {
+          _proced = _onLangsSelector(self, langs) || _proced;
+        });
+        if(_proced) return langs;
+
         var button = window.document.createElement("button");
         addClassName(button, options.langs_selector.langs_button);
         addClassName(button, options.langs_selector.langs_button + "-" + options.langs_selector.langs_button_color);
@@ -1052,17 +1096,19 @@ if(window.globalThis==null) {
           initLangsSelector(window);
           translate(window);
           if (options.title_trans) title_translate(window);
-          if (options.onReady) {
-            options.onReady();
-          }
+
+          appEvents.onReady.forEach(function (_onReady){
+            _onReady(self);
+          });
         }
       );
     },
     self = null;
 
   var appWindow = window;
-  var AppRes = function (window, _options) {
+  var AppRes = function (window, _options, _appEvents) {
     appWindow = window;
+    appEvents = _appEvents;
 
     options.lang = getItem(appWindow, "appres.lang");
     if(options.lang==null) {
@@ -1100,9 +1146,9 @@ if(window.globalThis==null) {
       } 
 
       // event functions
-      if (_options.onReady != null) options.onReady = _options.onReady;
-      if (_options.onLanguageChange != null) options.onLanguageChange = _options.onLanguageChange;
-      if (_options.onMakeLangsSelector != null) options.onMakeLangsSelector = _options.onMakeLangsSelector;
+      if (_options.onReady != null) appEvents.add("onReady", _options.onReady);
+      if (_options.onLanguageChange != null) appEvents.add("onLanguageChange", _options.onLanguageChange);
+      if (_options.onLangsSelector != null) appEvents.add("onLangsSelector", _options.onLangsSelector);
     }
 
     if (options.visibility == "hidden") {
@@ -1274,6 +1320,17 @@ if(window.globalThis==null) {
   AppRes.prototype.appPosition = function (window, selector) {
     return findPosition(window, selector);
   }
+
+  AppRes.prototype.addEvent = function (name, event) {
+    appEvents.add(name, event);
+  }
+  AppRes.prototype.removeEvent = function (name, event) {
+    appEvents.remove(name, event);
+  }
+  AppRes.prototype.getEvents = function (name) {
+    appEvents.get(name);
+  }
+
   AppRes.prototype.appOptions = function (opt, val) {
     if(opt && typeof opt=="object") options = opt;
     else
@@ -1305,20 +1362,19 @@ if(window.globalThis==null) {
     return formatString(arguments);
   }
 
-  window.AppRes = AppRes;
-  if (typeof define === "function" && define.amd && define.amd.AppRes) {
-    define("appres", [], function () { return AppRes; });
-  }
-
-
   function init(window){
-    window.APPRES = new AppRes(window, window.onAppResOptions());
+    window.APPRES = new AppRes(window, window.onAppResOptions(), window.APPRES.appEvents);
     window.APPRES.self(window.APPRES);
     window.$$ = window.APPRES.$$;
     window.$S = window.$$().$S();
     window.$T = window.$$().$T();
     window.$Q = window.$$().$Q();
     window.$F = window.$$().$F;
+  }
+
+  window.AppRes = AppRes;
+  if (typeof define === "function" && define.amd && define.amd.AppRes) {
+    define("appres", [], function () { return AppRes; });
   }
 
   if (document.addEventListener) { 
