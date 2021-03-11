@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.50
+ * AppRes JavaScript Library v0.0.51
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -406,8 +406,10 @@ if(window.globalThis==null) {
         langs: ".appres-langs",
         langs_button: ".appres-langs-button",  
         langs_button_color: "black",  
+        langs_button_size: null,  
         langs_items: ".appres-langs-items",
         style: {
+          css: {"position": "absolute", "display": "block", "right": "10px", "top": "15px", "z-index": "10000"},
           button: "auto"
         }
       },
@@ -496,6 +498,11 @@ if(window.globalThis==null) {
         return element.getAttribute(attr);
       } 
       return element.getAttribute(attr);
+    },
+    elementStyle = function (element, style) {
+      for (var property in style) {
+        element.style[property] = style[property];
+      }
     },
     objectString = function (text) {
       if(text==null) return null;
@@ -915,15 +922,24 @@ if(window.globalThis==null) {
           _proced = _onLangsSelector(self, langs) || _proced;
         });
         if(_proced) return langs;
-
+        
         var button = window.document.createElement("button");
         addClassName(button, options.langs_selector.langs_button);
         addClassName(button, options.langs_selector.langs_button + "-" + options.langs_selector.langs_button_color);
-
+        if(options.langs_selector.langs_button_size) {
+          addClassName(button, options.langs_selector.langs_button + "-" + options.langs_selector.langs_button_size);
+        }
         langs.appendChild(button);
+
         var div = window.document.createElement("div");
         addClassName(div, options.langs_selector.langs_items);  
         langs.appendChild(div);
+
+        if(options.langs_selector.style.css) {
+          setTimeout(function() {
+            elementStyle(langs, options.langs_selector.style.css);
+          }, 0);
+        }
       }
       return langs;  
     },
@@ -957,10 +973,6 @@ if(window.globalThis==null) {
         }          
         if(lang) {
           elementText(langs_button, lang);
-          var appres_langs = getLangs(window);
-          if(appres_langs) {
-            appres_langs.setAttribute('style', 'display:block');
-          }
         }
         langs_button.onclick = function(e) {
           toggleLangsSelector(window);
@@ -1148,9 +1160,15 @@ if(window.globalThis==null) {
         if(_options.langs_selector.langs_button_color != null) {
           options.langs_selector.langs_button_color = _options.langs_selector.langs_button_color;
         }          
+        if(_options.langs_selector.langs_button_size != null) {
+          options.langs_selector.langs_button_size = _options.langs_selector.langs_button_size;
+        }          
         if(_options.langs_selector.style != null) {
           if(_options.langs_selector.style.button != null) {
             options.langs_selector.style.button = _options.langs_selector.style.button;
+          }
+          if(_options.langs_selector.style.css != null) {
+            options.langs_selector.style.css = _options.langs_selector.style.css;
           }
         } 
       } 
