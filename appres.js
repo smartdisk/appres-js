@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.49
+ * AppRes JavaScript Library v0.0.50
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -642,7 +642,8 @@ if(window.globalThis==null) {
       var val = elementAttr(element, attr);
       if (window.APPRES_STRINGS) {
         if (element.hasAttribute('appres-'+attr)) {
-          keystr = keyString(element.getAttribute('appres-'+attr));
+          val = element.getAttribute('appres-'+attr);
+          keystr = keyString(val);
           if(keystr!="") newval = window.APPRES_STRINGS[keystr];
         } else {
           if (val != null) {
@@ -656,7 +657,9 @@ if(window.globalThis==null) {
       }
       if (newval) {
         newval = objectString(newval);
-      } else {
+      }
+      if (newval==null) {
+        newval = val;
         if (window.APPRES_STRINGS) {
           console.log("AppRes:" + options.lang + ":" + val);
         } else {
