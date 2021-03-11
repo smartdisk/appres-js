@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.52
+ * AppRes JavaScript Library v0.0.53
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -401,6 +401,7 @@ if(window.globalThis==null) {
       cache: true,
       visibility: "hidden",
       title_trans: true,
+      lang_attr: true,
       langs_all: false,
       langs_selector: {
         langs: ".appres-langs",
@@ -899,6 +900,12 @@ if(window.globalThis==null) {
                   if(langs_button.blur) langs_button.blur();
                   removeClassName(langs_button, options.langs_selector.langs_button + "-active");
                 }          
+                if(options.lang_attr==true) {
+                  var __html = elementSelectAll(window, 'html');
+                  if(__html && __html.length>0) {
+                    __html.setAttribute('lang', lang.substring(0,2));
+                  }
+                }
                 appEvents.onTranslate.forEach(function (_onTranslate){
                   _onTranslate(self, lang);
                 });
@@ -1119,6 +1126,14 @@ if(window.globalThis==null) {
           appEvents.onReady.forEach(function (_onReady){
             _onReady(self, options.lang);
           });
+
+          if(options.lang_attr==true) {
+            var __html = elementSelectAll(window, 'html');
+            if(__html && __html.length>0) {
+              __html.setAttribute('lang', options.lang.substring(0,2));
+            }
+          }
+
           appEvents.onTranslate.forEach(function (_onTranslate){
             _onTranslate(self, options.lang);
           });
@@ -1150,6 +1165,8 @@ if(window.globalThis==null) {
 
       if (_options.langs_all != null) options.langs_all = _options.langs_all;
       if (_options.title_trans != null) options.title_trans = _options.title_trans;
+      if (_options.lang_attr != null) options.lang_attr = _options.lang_attr;
+      
       
       if (_options.retry != null) options.retry = _options.retry;
       if (_options.time != null) options.time = _options.time;
