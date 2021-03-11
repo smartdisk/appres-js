@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.48
+ * AppRes JavaScript Library v0.0.49
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -21,6 +21,7 @@ if(window.globalThis==null) {
       onReady: [],
       onLanguageChange: [],
       onLangsSelector: [],
+      onTranslate: [],
       add: function(name, event) {
         if(this[name] == null) this[name] = [];
         if(this[name].indexOf(event)<0) {
@@ -888,6 +889,9 @@ if(window.globalThis==null) {
                   if(langs_button.blur) langs_button.blur();
                   removeClassName(langs_button, options.langs_selector.langs_button + "-active");
                 }          
+                appEvents.onTranslate.forEach(function (_onTranslate){
+                  _onTranslate(self);
+                });
                 appEvents.onLanguageChange.forEach(function (_onLanguageChange){
                   _onLanguageChange(self);
                 });
@@ -1100,6 +1104,9 @@ if(window.globalThis==null) {
           appEvents.onReady.forEach(function (_onReady){
             _onReady(self);
           });
+          appEvents.onTranslate.forEach(function (_onTranslate){
+            _onTranslate(self);
+          });
         }
       );
     },
@@ -1149,6 +1156,7 @@ if(window.globalThis==null) {
       if (_options.onReady != null) appEvents.add("onReady", _options.onReady);
       if (_options.onLanguageChange != null) appEvents.add("onLanguageChange", _options.onLanguageChange);
       if (_options.onLangsSelector != null) appEvents.add("onLangsSelector", _options.onLangsSelector);
+      if (_options.onTranslate != null) appEvents.add("onTranslate", _options.onTranslate);
     }
 
     if (options.visibility == "hidden") {
