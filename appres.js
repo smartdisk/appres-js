@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.54
+ * AppRes JavaScript Library v0.0.55
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -386,9 +386,9 @@ if(window.globalThis==null) {
 
   var
     options = {
-      host: "https://us-central1-appres-org.cloudfunctions.net/api",
+      // host: "https://us-central1-appres-org.cloudfunctions.net/api",
       // host: "https://appres.org/functions/api",
-      // host: "http://127.0.0.1:5001/appres-org/us-central1/api",
+      host: "http://127.0.0.1:5001/appres-org/us-central1/api",
       pkey: "GXYqIgrafjTRatwTB96d",
       akey: "39f031e6-94a0-4e14-b600-82779ec899d7",
       cmd: "string-dict",
@@ -415,7 +415,9 @@ if(window.globalThis==null) {
         }
       },
       default_excepts: ["material-icons", "mat-tab-group"],
-      user_excepts: []
+      user_excepts: [],
+      default_img_attrs: ["svgIcon"],
+      user_img_attrs: []
     },
     md5 = new MD5(),
     sha1 = new SHA1(),
@@ -441,7 +443,60 @@ if(window.globalThis==null) {
         if(options.default_excepts.indexOf(element.id)>=0) return true;
         if(options.user_excepts.indexOf(element.id)>=0) return true;
       }
+      if(element.tagName) {
+        var tagname = element.tagName.toLowerCase();
+        if(options.default_excepts.indexOf(tagname)>=0) return true;
+        if(options.user_excepts.indexOf(tagname)>=0) return true;
+      }
       return false;
+    },
+    getFileName = function (filename) {
+      var i = filename.lastIndexOf('/');
+      if(i>=0) filename = filename.substring(i+1);
+      return filename;
+    },
+    getFileNameNoExt = function (filename) {
+      filename = getFileName(filename);
+      var i = filename.lastIndexOf('.');
+      return (i < 0) ? filename : filename.substring(0, i);
+    },
+    getFileExtension = function (filename) {
+      filename = getFileName(filename);
+      var i = filename.lastIndexOf('.');
+      return (i < 0) ? null : filename.substring(i+1);
+    },  
+    getImgAttr = function (element) {
+      var attrName;
+      var attr;
+
+      for(i=0;i<options.default_img_attrs.length;i++) {
+        attrName = options.default_img_attrs[i];        
+        attr = element.getAttribute(attrName);
+        if(attr) return attr;
+      }
+      for(i=0;i<options.user_img_attrs.length;i++) {
+        attrName = options.user_img_attrs[i];        
+        attr = element.getAttribute(attrName);
+        if(attr) return attr;
+      }
+      
+      attrName = element.getAttribute("appres");
+      if(attrName) {
+        attr = element.getAttribute(attrName);
+        if(attr) return attr;
+      }
+
+      return null;
+    },
+    getChild = function(element, tagName) {
+      var tagname = tagName.toLowerCase();
+      for(i=0;i<element.childNodes.length;i++) {
+        var child = element.childNodes[i];
+        if(typeof child === "object" && typeof child.tagName  === "string" && child.tagName.toLowerCase()===tagname) {
+          return child;
+        }
+      }
+      return null;
     },
     findPosition = function (window, obj) { 
       var currenttop = 0; 
@@ -450,7 +505,7 @@ if(window.globalThis==null) {
         obj = window;
         window = appWindow;
       }
-      if(typeof obj == 'string') {
+      if(typeof obj === "string") {
         var objs = elementSelectAll(window, obj);
         if(objs.length>0) {
           obj = objs[0];
@@ -679,7 +734,7 @@ if(window.globalThis==null) {
     appTranslateAsync = function (window, element, retry, callback) {
       if (window.APPRES_STRINGS) {
         if(elementAttr(element, "appres-lang")==options.lang) {
-          if(callback) callback(true);
+          if(callback) callback(element, true);
           return;
         }
 
@@ -689,6 +744,88 @@ if(window.globalThis==null) {
           if(element.hasAttribute("appres")) {
             attrs = element.getAttribute("appres").split(/\s* |,\s/);
           }
+          
+          var already = null;
+          var attrnum = attrs.indexOf("image");
+          if(attrnum<0) attrnum = attrs.indexOf("icon");
+          if(attrnum>=0) {
+            var imgattr = getImgAttr(element);
+            if(imgattr==null) {
+              already = element.getAttribute("appres-already");
+              if(already!=true && already!="true") {
+                imgattr = already;
+              }
+            }
+            if(imgattr==null && typeof element.src==="string") {
+              imgattr = getFileName(element.src);
+              var pos1 = imgattr.lastIndexOf("?");
+              var pos2 = imgattr.lastIndexOf("&");
+              if(pos2>=0) {
+                imgattr = imgattr.substring(pos2+1);
+              } else 
+              if(pos1>=0) {
+                imgattr = imgattr.substring(pos1+1);
+              }
+              if(imgattr.lastIndexOf(".")<0) {
+                imgattr = null;
+              }
+            } 
+
+            if(imgattr){
+              var url = options.host +
+              "?pkey=" + options.pkey +
+              "&akey=" + options.akey +
+              "&lang=" + options.lang +
+              "&target=js" + 
+              "&file=" + imgattr +
+              "&cmd=" + attrs[attrnum];
+
+              already = element.getAttribute("appres-already");
+              if(already) {
+                if(already!=true && already!="true") {
+                  if(element.src) {
+                    element.src = url;
+                  } else {
+                    var img = getChild(element, "img");
+                    if(img) img.src = url + "&type=" + already;  
+                  }  
+                }
+              } else {
+                element.setAttribute("appres-already", true);
+                if(element.src) {
+                  element.onload = function() {
+                    element.setAttribute("appres-already", imgattr);
+                    element.setAttribute('style', 'visibility:visible');
+                    if(callback) callback(element, true);
+                  };
+                  element.src = url;
+                } else {
+                  var svg = getChild(element, "svg");
+                  if(svg) {  
+                    var image = getChild(svg, "image");
+                    if(image) {
+                      var parentelement = element.parentElement;
+
+                      var img = document.createElement('img');
+                      img.src = url + "&type=" + "svg";
+                      img.className = element.className;
+                      var appres_attr2 = element.getAttribute("appres");
+                      if(appres_attr2) {
+                        img.setAttribute("appres", appres_attr2);
+                        if(element.getAttribute(appres_attr2)) img.setAttribute(appres_attr2, element.getAttribute(appres_attr2));
+                      }
+                      img.onload = function() {
+                        img.setAttribute("appres-already", imgattr+".svg");
+                        if(callback) callback(img, true);
+                      };
+                      parentelement.replaceChild(img, element);
+                    }
+                  }  
+                }
+              }
+              return;
+            }
+          }          
           
           if(attrs.indexOf("text")>=0) {
             elementText(element, appString(window, element) || elementText(element));
@@ -714,7 +851,7 @@ if(window.globalThis==null) {
         }
 
         if (callback) {
-          callback(true);
+          callback(element, true);
         }
       } else {
         if (retry >= options.retry) {
@@ -722,7 +859,7 @@ if(window.globalThis==null) {
             window.onChangedAppRes(element, false);
           }
           if (callback) {
-            callback(false);
+            callback(element, false);
           }
         } else {
           setTimeout(function () {
@@ -781,7 +918,7 @@ if(window.globalThis==null) {
       return getItem(window, "appres.ver");
     },
     elementSelectAll = function (window, selector) {
-      if(typeof selector == "object") return [selector];
+      if(typeof selector === "object") return [selector];
       if(window==null) return [];
       return window.document.querySelectorAll(selector);
     },
@@ -791,7 +928,10 @@ if(window.globalThis==null) {
       }
       var arr = element.className.split(" ");
       if (arr.indexOf(name) == -1) {
-        element.className += " " + name;
+        if(element.className!="") {
+          element.className += " ";  
+        }
+        element.className += name;
       }
     },    
     removeClassName = function (element, name) {
@@ -997,6 +1137,7 @@ if(window.globalThis==null) {
       elements.forEach(function (element) {
         element.removeAttribute("appres-lang");
         element.removeAttribute("appres-key");
+        element.removeAttribute("appres-already");
       });
     },
     title_translate = function (window) {
@@ -1008,13 +1149,7 @@ if(window.globalThis==null) {
     translate = function (window, sels) {
       var elements = (sels==null) ? elementSelectAll(window, ".appres") : elementSelectAll(window, ".appres " + sels);
       elements.forEach(function (element) {
-        var image = elementAttr(element, "image");
-        if(image) {
-          console.log(">>>" + image);
-
-        }
-
-        appTranslateAsync(window, element, 0, function (success) {
+        appTranslateAsync(window, element, 0, function (element, success) {
           var appres_lang = elementAttr(element, "appres-lang");
           if(success && appres_lang==null) {
             if (options.visibility == "hidden") {
@@ -1051,7 +1186,7 @@ if(window.globalThis==null) {
     },
     langsSelectorSmallButton = function (window, retry) {
       if(window==null) window = appWindow;
-      if(typeof window == "number") {
+      if(typeof window === "number") {
         retry = window;
         window = appWindow;
       }
@@ -1071,7 +1206,7 @@ if(window.globalThis==null) {
       }
     },
     readFromCache = function (window, name) {
-      if(typeof window == "string") {
+      if(typeof window === "string") {
         name = window;
         window = appWindow;
       }
@@ -1172,7 +1307,10 @@ if(window.globalThis==null) {
       if (_options.time != null) options.time = _options.time;
       if (_options.cache != null) options.cache = _options.cache;
       if (_options.visibility != null) options.visibility = _options.visibility;
+
       if (_options.excepts != null) options.user_excepts = _options.excepts;
+      if (_options.img_attrs != null) options.user_img_attrs = _options.img_attrs;
+
       if (_options.langs_selector != null) {
         if(_options.langs_selector.langs_button_color != null) {
           options.langs_selector.langs_button_color = _options.langs_selector.langs_button_color;
@@ -1378,11 +1516,13 @@ if(window.globalThis==null) {
   }
 
   AppRes.prototype.appOptions = function (opt, val) {
-    if(opt && typeof opt=="object") options = opt;
-    else
-    if(opt && typeof opt=="string" && val) options[opt] = val;
-    else
-    if(opt && typeof opt=="string" && val==null) return options[opt];
+    if(opt) {
+      if(typeof opt==="object") options = opt;
+      else
+      if(typeof opt==="string" && val) options[opt] = val;
+      else
+      if(typeof opt==="string" && val==null) return options[opt];  
+    }
     return options;
   };
     
