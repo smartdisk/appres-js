@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.56
+ * AppRes JavaScript Library v0.0.57
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -772,6 +772,9 @@ if(window.globalThis==null) {
             } 
 
             if(imgattr){
+              var clientWidth = element.clientWidth;
+              var clientHeight = element.clientHeight;
+
               var url = options.host +
               "?pkey=" + options.pkey +
               "&akey=" + options.akey +
@@ -779,6 +782,10 @@ if(window.globalThis==null) {
               "&target=js" + 
               "&file=" + imgattr +
               "&cmd=" + attrs[attrnum];
+
+              if(clientWidth!==null && clientHeight!==null) {
+                url += "&width=" + clientWidth + "&height=" + clientHeight;
+              }
 
               already = element.getAttribute("appres-already");
               if(already) {
@@ -804,21 +811,22 @@ if(window.globalThis==null) {
                   if(svg) {  
                     var image = getChild(svg, "image");
                     if(image) {
-                      var parentelement = element.parentElement;
-
-                      var img = document.createElement('img');
-                      img.src = url + "&type=" + "svg";
-                      img.className = element.className;
-                      var appres_attr2 = element.getAttribute("appres");
-                      if(appres_attr2) {
-                        img.setAttribute("appres", appres_attr2);
-                        if(element.getAttribute(appres_attr2)) img.setAttribute(appres_attr2, element.getAttribute(appres_attr2));
+                      var pe = element.parentElement;
+                      if(pe) {
+                        var img = document.createElement('img');
+                        img.src = url + "&type=" + "svg";
+                        img.className = element.className;
+                        var appres_attr2 = element.getAttribute("appres");
+                        if(appres_attr2) {
+                          img.setAttribute("appres", appres_attr2);
+                          if(element.getAttribute(appres_attr2)) img.setAttribute(appres_attr2, element.getAttribute(appres_attr2));
+                        }
+                        img.onload = function() {
+                          img.setAttribute("appres-already", imgattr+".svg");
+                          if(callback) callback(img, true);
+                        };
+                        pe.replaceChild(img, element);  
                       }
-                      img.onload = function() {
-                        img.setAttribute("appres-already", imgattr+".svg");
-                        if(callback) callback(img, true);
-                      };
-                      parentelement.replaceChild(img, element);
                     }
                   }  
                 }
