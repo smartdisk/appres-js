@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.57
+ * AppRes JavaScript Library v0.0.58
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -386,9 +386,9 @@ if(window.globalThis==null) {
 
   var
     options = {
-      host: "https://us-central1-appres-org.cloudfunctions.net/api",
+      // host: "https://us-central1-appres-org.cloudfunctions.net/api",
       // host: "https://appres.org/functions/api",
-      // host: "http://127.0.0.1:5001/appres-org/us-central1/api",
+      host: "http://127.0.0.1:5001/appres-org/us-central1/api",
       pkey: "GXYqIgrafjTRatwTB96d",
       akey: "39f031e6-94a0-4e14-b600-82779ec899d7",
       cmd: "string-dict",
@@ -738,6 +738,12 @@ if(window.globalThis==null) {
           return;
         }
 
+        // title is always translate
+        var attr = 'title';
+        if(elementAttr(element, attr)) {
+          elementAttr(element, attr, appAttr(window, element, attr) || elementAttr(element, attr));
+        }
+
         // innerText, innerHTML
         if(!isExpects(element)) {
           var attrs = ["text"];
@@ -843,11 +849,6 @@ if(window.globalThis==null) {
           }
 
           // attributes
-          var attr = 'title';
-          if(elementAttr(element, attr)) {
-            elementAttr(element, attr, appAttr(window, element, attr) || elementAttr(element, attr));
-          }
-
           attr = 'href';
           if(attrs.indexOf(attr)>=0 && elementAttr(element, attr)) {
             elementAttr(element, attr, appAttr(window, element, attr) || elementAttr(element, attr));
