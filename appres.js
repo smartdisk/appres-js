@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.59
+ * AppRes JavaScript Library v0.0.60
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -849,9 +849,17 @@ if(window.globalThis==null) {
           }
 
           // attributes
-          attr = 'href';
-          if(attrs.indexOf(attr)>=0 && elementAttr(element, attr)) {
-            elementAttr(element, attr, appAttr(window, element, attr) || elementAttr(element, attr));
+          if(attrs.indexOf("src")>=0) {
+            attr = 'src';
+            if(attrs.indexOf(attr)>=0 && elementAttr(element, attr)) {
+              elementAttr(element, attr, appAttr(window, element, attr) || elementAttr(element, attr));
+            }
+          }
+          if(attrs.indexOf("href")>=0) {
+            attr = 'href';
+            if(attrs.indexOf(attr)>=0 && elementAttr(element, attr)) {
+              elementAttr(element, attr, appAttr(window, element, attr) || elementAttr(element, attr));
+            }
           }
 
           if (window.onChangedAppRes) {
