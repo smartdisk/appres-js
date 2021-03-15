@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.61
+ * AppRes JavaScript Library v0.0.62
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -734,15 +734,17 @@ if(window.globalThis==null) {
     appTranslateAsync = function (window, element, retry, callback) {
       if (window.APPRES_STRINGS) {
         if(elementAttr(element, "appres-lang")==options.lang) {
-          if(callback) callback(element, true);
+          if(callback) callback(element, true, false);
           return;
         }
 
-        // title is always translate
+        // element title is always translate
         var attr = 'title';
         if(elementAttr(element, attr)) {
           elementAttr(element, attr, appAttr(window, element, attr) || elementAttr(element, attr));
         }
+
+        let visible = true;
 
         if(!isExpects(element)) {
           var attrs = ["text"];
@@ -808,7 +810,7 @@ if(window.globalThis==null) {
                   element.onload = function() {
                     element.setAttribute("appres-already", imgattr);
                     element.setAttribute('style', 'visibility:visible');
-                    if(callback) callback(element, true);
+                    if(callback) callback(element, true, false);
                   };
                   element.src = url;
                 } else {
@@ -828,7 +830,8 @@ if(window.globalThis==null) {
                         }
                         img.onload = function() {
                           img.setAttribute("appres-already", imgattr+".svg");
-                          if(callback) callback(img, true);
+                          img.setAttribute('style', 'visibility:visible');
+                          if(callback) callback(img, true, false);
                         };
                         pe.replaceChild(img, element);  
                       }
@@ -852,6 +855,10 @@ if(window.globalThis==null) {
           if(attrs.indexOf("src")>=0) {
             attr = 'src';
             if(attrs.indexOf(attr)>=0 && elementAttr(element, attr)) {
+              element.onload = function() {
+                element.setAttribute('style', 'visibility:visible');
+              };
+              visible = false;
               elementAttr(element, attr, appAttr(window, element, attr) || elementAttr(element, attr));
             }
           }
@@ -869,7 +876,7 @@ if(window.globalThis==null) {
         }
 
         if (callback) {
-          callback(element, true);
+          callback(element, true, visible);
         }
       } else {
         if (retry >= options.retry) {
@@ -877,7 +884,7 @@ if(window.globalThis==null) {
             window.onChangedAppRes(element, false);
           }
           if (callback) {
-            callback(element, false);
+            callback(element, false, true);
           }
         } else {
           setTimeout(function () {
@@ -1167,10 +1174,10 @@ if(window.globalThis==null) {
     translate = function (window, sels) {
       var elements = (sels==null) ? elementSelectAll(window, ".appres") : elementSelectAll(window, ".appres " + sels);
       elements.forEach(function (element) {
-        appTranslateAsync(window, element, 0, function (element, success) {
+        appTranslateAsync(window, element, 0, function (element, success, visible) {
           var appres_lang = elementAttr(element, "appres-lang");
           if(success && appres_lang==null) {
-            if (options.visibility == "hidden") {
+            if (options.visibility == "hidden" && visible===true) {
               element.setAttribute('style', 'visibility:visible');
             }  
             elementAttr(element, "appres-lang", options.lang);
