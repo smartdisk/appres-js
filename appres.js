@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.60
+ * AppRes JavaScript Library v0.0.61
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -7,7 +7,7 @@
  * https://appres.org/license
  *
  * Create Date: 2021.02.07 KST
- * Last Update: 2021.03.11 KST
+ * Last Update: 2021.03.15 KST
  */
 
 
@@ -564,7 +564,7 @@ if(window.globalThis==null) {
       if(text==null) return null;
       if (typeof text === "object") {
         var _newtext = text[options.lang];
-        if (_newtext == "") _newtext = text["default"];
+        if (_newtext==null || _newtext == "") _newtext = text["default"];
         text = _newtext;
       }
       return text;
@@ -744,7 +744,6 @@ if(window.globalThis==null) {
           elementAttr(element, attr, appAttr(window, element, attr) || elementAttr(element, attr));
         }
 
-        // innerText, innerHTML
         if(!isExpects(element)) {
           var attrs = ["text"];
           if(element.hasAttribute("appres")) {
@@ -841,20 +840,22 @@ if(window.globalThis==null) {
             }
           }          
           
-          if(attrs.indexOf("text")>=0) {
-            elementText(element, appString(window, element) || elementText(element));
-          } else
+          // innerHTML, innerText
           if(attrs.indexOf("html")>=0) {
             elementHTML(element, appHTML(window, element) || elementHTML(element));
+          } else
+          if(attrs.indexOf("text")>=0) {
+            elementText(element, appString(window, element) || elementText(element));
           }
 
-          // attributes
+          // src attributes
           if(attrs.indexOf("src")>=0) {
             attr = 'src';
             if(attrs.indexOf(attr)>=0 && elementAttr(element, attr)) {
               elementAttr(element, attr, appAttr(window, element, attr) || elementAttr(element, attr));
             }
           }
+          // href attributes
           if(attrs.indexOf("href")>=0) {
             attr = 'href';
             if(attrs.indexOf(attr)>=0 && elementAttr(element, attr)) {
@@ -1293,7 +1294,7 @@ if(window.globalThis==null) {
       );
     },
     self = null;
-
+    
   var appWindow = window;
   var AppRes = function (window, _options, _appEvents) {
     appWindow = window;
