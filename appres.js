@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.62
+ * AppRes JavaScript Library v0.0.63
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -976,6 +976,12 @@ if(window.globalThis==null) {
     getElementStyleDisplay = function (window, element) {
       return element.currentStyle ? element.currentStyle.display : window.getComputedStyle(element, null).display;
     },
+    getLang = function () {
+      return options.lang;
+    },
+    setLang = function (lang) {
+      options.lang = lang;
+    },
     getLangs = function (window) {
       var appres_langs = elementSelectAll(window, options.langs_selector.langs);
       if(appres_langs.length>0) {
@@ -1388,6 +1394,18 @@ if(window.globalThis==null) {
   AppRes.prototype.self = function (o) {
     if(o) self = o;
     return self;
+  };
+
+  AppRes.prototype.lang = function (lang) {
+    if(lang) setLang(lang);
+    return getLang();
+  };
+
+  AppRes.prototype.setLang = function (lang) {
+    return setLang(lang);
+  };
+  AppRes.prototype.getLang = function () {
+    return getLang();
   };
 
   AppRes.prototype.appString = function (text, attr) {
