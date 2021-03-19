@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.63
+ * AppRes JavaScript Library v0.0.64
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -7,7 +7,7 @@
  * https://appres.org/license
  *
  * Create Date: 2021.02.07 KST
- * Last Update: 2021.03.15 KST
+ * Last Update: 2021.03.19 KST
  */
 
 
@@ -391,7 +391,7 @@ if(window.globalThis==null) {
       // host: "http://127.0.0.1:5001/appres-org/us-central1/api",
       pkey: "GXYqIgrafjTRatwTB96d",
       akey: "39f031e6-94a0-4e14-b600-82779ec899d7",
-      cmd: "string-dict",
+      cmd: "strings",
       target: "js",
       skey: "default",
       lang: "ja-JP",
@@ -585,47 +585,41 @@ if(window.globalThis==null) {
       if (typeof element === "string") {        
         keystr = keyString(element);
         if(keystr!="") {
-          if(window.APPRES_STRINGS && window.APPRES_DICTS) {
-            newtext = window.APPRES_STRINGS[keystr] || window.APPRES_DICTS[keystr];
-          } else 
           if(window.APPRES_STRINGS) {
             newtext = window.APPRES_STRINGS[keystr];
-          } else 
-          if(window.APPRES_DICTS) {
-            newtext = window.APPRES_DICTS[keystr];
           }            
         }
         return objectString(newtext) || element;
       }
       
-      if (window.APPRES_DICTS) {
+      if (window.APPRES_STRINGS) {
         if (element.hasAttribute('dict')) {
           keystr = keyString(element.getAttribute('dict'));
           if(keystr!="") {
-            newtext = window.APPRES_DICTS[keystr];
+            newtext = window.APPRES_STRINGS[keystr];
           }
         }
-      }
-
-      if (newtext==null && window.APPRES_STRINGS) {
-        if (element.hasAttribute('string')) {
-          keystr = keyString(element.getAttribute('string'));
-          if(keystr!="") newtext = window.APPRES_STRINGS[keystr];
-        } else
-        if (element.hasAttribute('appres-key')) {
-          keystr = element.getAttribute('appres-key') || "";
-          if(keystr!="") newtext = window.APPRES_STRINGS[keystr];
-        } else {
-          var text = elementText(element);
-          if (text != null) {
-            keystr = keyString(text);
-            if(keystr!="") {
-              element.setAttribute('appres-key', keystr);
-              newtext = window.APPRES_STRINGS[keystr];
+        if (newtext==null) {
+          if (element.hasAttribute('string')) {
+            keystr = keyString(element.getAttribute('string'));
+            if(keystr!="") newtext = window.APPRES_STRINGS[keystr];
+          } else
+          if (element.hasAttribute('appres-key')) {
+            keystr = element.getAttribute('appres-key') || "";
+            if(keystr!="") newtext = window.APPRES_STRINGS[keystr];
+          } else {
+            var text = elementText(element);
+            if (text != null) {
+              keystr = keyString(text);
+              if(keystr!="") {
+                element.setAttribute('appres-key', keystr);
+                newtext = window.APPRES_STRINGS[keystr];
+              }
             }
           }
-        }
+        }  
       }
+
       if (newtext) {
         newtext = objectString(newtext);
       } else {
@@ -647,47 +641,42 @@ if(window.globalThis==null) {
       if (typeof element === "string") {        
         keystr = keyString(element);
         if(keystr!="") {
-          if(window.APPRES_STRINGS && window.APPRES_DICTS) {
-            newhtml = window.APPRES_STRINGS[keystr] || window.APPRES_DICTS[keystr];
-          } else 
           if(window.APPRES_STRINGS) {
             newhtml = window.APPRES_STRINGS[keystr];
-          } else 
-          if(window.APPRES_DICTS) {
-            newhtml = window.APPRES_DICTS[keystr];
-          }            
+          }
         }
         return objectString(newhtml) || element;
       }
       
-      if (window.APPRES_DICTS) {
+      if (window.APPRES_STRINGS) {
         if (element.hasAttribute('dict')) {
           keystr = keyString(element.getAttribute('dict'));
           if(keystr!="") {
-            newhtml = window.APPRES_DICTS[keystr];
+            newhtml = window.APPRES_STRINGS[keystr];
           }
         }
-      }
 
-      if (newhtml==null && window.APPRES_STRINGS) {
-        if (element.hasAttribute('string')) {
-          keystr = keyString(element.getAttribute('string'));
-          if(keystr!="") newhtml = window.APPRES_STRINGS[keystr];
-        } else
-        if (element.hasAttribute('appres-key')) {
-          keystr = element.getAttribute('appres-key') || "";
-          if(keystr!="") newhtml = window.APPRES_STRINGS[keystr];
-        } else {
-          var html = elementHTML(element);
-          if (html != null) {
-            keystr = keyString(html);
-            if(keystr!="") {
-              element.setAttribute('appres-key', keystr);
-              newhtml = window.APPRES_STRINGS[keystr];
+        if (newhtml==null) {
+          if (element.hasAttribute('string')) {
+            keystr = keyString(element.getAttribute('string'));
+            if(keystr!="") newhtml = window.APPRES_STRINGS[keystr];
+          } else
+          if (element.hasAttribute('appres-key')) {
+            keystr = element.getAttribute('appres-key') || "";
+            if(keystr!="") newhtml = window.APPRES_STRINGS[keystr];
+          } else {
+            var html = elementHTML(element);
+            if (html != null) {
+              keystr = keyString(html);
+              if(keystr!="") {
+                element.setAttribute('appres-key', keystr);
+                newhtml = window.APPRES_STRINGS[keystr];
+              }
             }
           }
-        }
+        }  
       }
+
       if (newhtml) {
         newhtml = objectString(newhtml);
       } else {
@@ -1254,7 +1243,6 @@ if(window.globalThis==null) {
     loadFromCache = function (window) {
       window.APPRES_LANGS = readFromCache(window, "appres.langs");  
       window.APPRES_STRINGS = readFromCache(window, "appres.strings");
-      window.APPRES_DICTS = readFromCache(window, "appres.dicts");
     },
     loadAppResScript = function (window, url, ver) {
       loadScript(window, url + "&cver=" + ver,
@@ -1262,7 +1250,7 @@ if(window.globalThis==null) {
           if (options.cache) {
             if(window.APPRES_STRINGS==null) {
               loadFromCache(window);
-              if(window.APPRES_STRINGS==null || window.APPRES_DICTS==null || window.APPRES_LANGS==null) {
+              if(window.APPRES_STRINGS==null || window.APPRES_LANGS==null) {
                 clearItems(window);
                 setTimeout(function() {
                   loadAppResScript(window, url, 0);
@@ -1274,7 +1262,6 @@ if(window.globalThis==null) {
               if(window.APPRES_DVER>0) {
                 setItem(window, "appres.strings", JSON.stringify(window.APPRES_STRINGS));
                 setItem(window, "appres.dicts", JSON.stringify(window.APPRES_DICTS));
-                setItem(window, "appres.langs", JSON.stringify(window.APPRES_LANGS));
                 setItem(window, "appres.url", url);
                 setItem(window, "appres.ver", JSON.stringify(window.APPRES_DVER));  
               } else {
