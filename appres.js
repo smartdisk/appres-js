@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.65
+ * AppRes JavaScript Library v0.0.66
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -524,6 +524,7 @@ if(window.globalThis==null) {
     autoGrow = function (window, selector) {
       var elements = elementSelectAll(window, selector);
       elements.forEach(function (element) {
+        element.style.height = "1px";
         element.style.height = (element.scrollHeight)+"px";  
       });
     },
