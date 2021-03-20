@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.67
+ * AppRes JavaScript Library v0.0.68
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -1423,13 +1423,19 @@ if(window.globalThis==null) {
     return loadScript(window, url, onload);
   };
 
-  AppRes.prototype.getString = function (window, cmd, key, onload, vars, svar) {
+  AppRes.prototype.getString = function (window, cmd, key, onload, lang, svar, vars) {
     var url = options.host +
       "?pkey=" + options.pkey +
       "&akey=" + options.akey +
-      "&lang=" + options.lang +
       "&cmd=" + cmd + 
       "&key=" + key;
+
+      if(lang) {
+        url += "&lang=" + lang;
+      } else {
+        url += "&lang=" + options.lang;
+      }
+
       if(vars==null && svar==null) {
         svar = "___APPRESVAR___";
       }
