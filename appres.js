@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.64
+ * AppRes JavaScript Library v0.0.65
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -521,6 +521,12 @@ if(window.globalThis==null) {
       } 
       return [currentleft, currenttop]; 
     },
+    autoGrow = function (window, selector) {
+      var elements = elementSelectAll(window, selector);
+      elements.forEach(function (element) {
+        element.style.height = (element.scrollHeight)+"px";  
+      });
+    },
     elementText = function (element, text) {
       if (text) {
         if (element.textContent!=null) {
@@ -932,6 +938,7 @@ if(window.globalThis==null) {
       return getItem(window, "appres.ver");
     },
     elementSelectAll = function (window, selector) {
+      if(typeof window === "object" && selector==null) return [window];
       if(typeof selector === "object") return [selector];
       if(window==null) return [];
       return window.document.querySelectorAll(selector);
@@ -1261,7 +1268,6 @@ if(window.globalThis==null) {
             } else {
               if(window.APPRES_DVER>0) {
                 setItem(window, "appres.strings", JSON.stringify(window.APPRES_STRINGS));
-                setItem(window, "appres.dicts", JSON.stringify(window.APPRES_DICTS));
                 setItem(window, "appres.url", url);
                 setItem(window, "appres.ver", JSON.stringify(window.APPRES_DVER));  
               } else {
@@ -1528,12 +1534,22 @@ if(window.globalThis==null) {
       });  
     }
   };
-  AppRes.prototype.appLangsSelectorSmallButton = function (window, retry) {
+
+
+  AppRes.prototype.appLangsSelectorSmallButton = function (window) {
     langsSelectorSmallButton(window, 0);
   };
   AppRes.prototype.appPosition = function (window, selector) {
     return findPosition(window, selector);
-  }
+  };
+
+  AppRes.prototype.appAutoGrow = function (window, selector) {
+    if(window!=appWindow && typeof window == 'object' && selector==null) {
+      selector = window;
+      window = appWindow;
+    }
+    autoGrow(window, selector);
+  };
 
   AppRes.prototype.addEvent = function (name, event) {
     appEvents.add(name, event);
