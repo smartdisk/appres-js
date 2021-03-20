@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.66
+ * AppRes JavaScript Library v0.0.67
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -421,14 +421,28 @@ if(window.globalThis==null) {
     },
     md5 = new MD5(),
     sha1 = new SHA1(),
-    loadScript = function (window, url, callback) {
+    getScript = function (window, url, onload) {
+      if(typeof window === "string" && onload==null) {
+        onload = url;
+        url = window;
+        window = appWindow;
+      }
       var script = window.document.createElement("script");
       script.type = 'text/javascript';
       // use onreadystatechange in IE
       script.onload = function () {
-        if (callback) callback();
+        if (onload) onload(window, script);
       };
       script.src = url;
+      return script;
+    },
+    loadScript = function (window, url, onload) {
+      if(typeof window === "string" && onload==null) {
+        onload = url;
+        url = window;
+        window = appWindow;
+      }
+      var script = getScript(window, url, onload);
       window.document.getElementsByTagName('head')[0].appendChild(script);
     },
     isExpects = function (element) {
@@ -1254,7 +1268,7 @@ if(window.globalThis==null) {
     },
     loadAppResScript = function (window, url, ver) {
       loadScript(window, url + "&cver=" + ver,
-        function () {
+        function (script) {
           if (options.cache) {
             if(window.APPRES_STRINGS==null) {
               loadFromCache(window);
@@ -1401,6 +1415,45 @@ if(window.globalThis==null) {
   AppRes.prototype.getLang = function () {
     return getLang();
   };
+
+  AppRes.prototype.getScript = function (window, url, onload) {
+    return getScript(window, url, onload);
+  };
+  AppRes.prototype.loadScript = function (window, url, onload) {
+    return loadScript(window, url, onload);
+  };
+
+  AppRes.prototype.getString = function (window, cmd, key, onload, vars, svar) {
+    var url = options.host +
+      "?pkey=" + options.pkey +
+      "&akey=" + options.akey +
+      "&lang=" + options.lang +
+      "&cmd=" + cmd + 
+      "&key=" + key;
+      if(vars==null && svar==null) {
+        svar = "___APPRESVAR___";
+      }
+      if(vars) url += "&vars=" + vars;
+      if(svar) url += "&var=" + svar;
+      return this.loadScript(window, url, function(window, script) {
+        if(onload) {
+          let r = null;
+          if(vars && svar) {
+            r = window[vars][svar];
+          } else
+          if(vars) {
+            r = window[vars][window[vars].length-1];
+          } else
+          if(svar) {
+            r = window[svar];
+          }
+          if(onload(window, script, r)) {
+            window.document.getElementsByTagName('head')[0].removeChild(script);
+          }
+        }
+      });
+  }
+
 
   AppRes.prototype.appString = function (text, attr) {
     return appString(appWindow, text, attr);
