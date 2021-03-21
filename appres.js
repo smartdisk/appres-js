@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.68
+ * AppRes JavaScript Library v0.0.69
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -535,11 +535,15 @@ if(window.globalThis==null) {
       } 
       return [currentleft, currenttop]; 
     },
-    autoGrow = function (window, selector) {
+    autoGrow = function (window, selector, adjust) {
+      if(adjust==null) adjust = 0;
+      if(typeof adjust !== "number") {
+        adjust = 1 * adjust;
+      }
       var elements = elementSelectAll(window, selector);
       elements.forEach(function (element) {
         element.style.height = "1px";
-        element.style.height = (element.scrollHeight)+"px";  
+        element.style.height = (element.scrollHeight + adjust)+"px";  
       });
     },
     elementText = function (element, text) {
@@ -1423,7 +1427,7 @@ if(window.globalThis==null) {
     return loadScript(window, url, onload);
   };
 
-  AppRes.prototype.getString = function (window, cmd, key, onload, lang, svar, vars) {
+  AppRes.prototype.getData = function (window, cmd, key, onload, lang, svar, vars) {
     var url = options.host +
       "?pkey=" + options.pkey +
       "&akey=" + options.akey +
@@ -1460,6 +1464,22 @@ if(window.globalThis==null) {
       });
   }
 
+  AppRes.prototype.getTemplate = function (window, key, onload, lang) {
+    return this.getData(window, "templates", key, function(window, script, data) {
+      if(onload) {
+        return onload(data);
+      }
+      return true;
+    }, lang, "___APPRESTEMPVAR___");
+  }
+  AppRes.prototype.getString = function (window, key, onload, lang) {
+    return this.getData(window, "strings", key, function(window, script, data) {
+      if(onload) {
+        return onload(data);
+      }
+      return true;
+    }, lang, "___APPRESSTRINGVAR___");
+  }
 
   AppRes.prototype.appString = function (text, attr) {
     return appString(appWindow, text, attr);
@@ -1603,12 +1623,13 @@ if(window.globalThis==null) {
     return findPosition(window, selector);
   };
 
-  AppRes.prototype.appAutoGrow = function (window, selector) {
-    if(window!=appWindow && typeof window == 'object' && selector==null) {
+  AppRes.prototype.appAutoGrow = function (window, selector, adjust) {
+    if(window!=appWindow && typeof window == 'object' && (selector==null || typeof selector === "number")) {
+      adjust = selector;
       selector = window;
       window = appWindow;
     }
-    autoGrow(window, selector);
+    autoGrow(window, selector, adjust);
   };
 
   AppRes.prototype.addEvent = function (name, event) {
