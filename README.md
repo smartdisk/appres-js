@@ -1,1 +1,1 @@
-# The AppRes JavaScript & CSS v0.0.69
+# The AppRes JavaScript & CSS v0.0.70
