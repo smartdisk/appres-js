@@ -446,7 +446,7 @@ if(window.globalThis==null) {
       window.document.getElementsByTagName('head')[0].appendChild(script);
     },
     isExpects = function (element) {
-      var arr = element.className.split(" ");
+      var arr = split(element.className);
       for(i=0;i<options.default_excepts.length;i++) {
         if (arr.indexOf(options.default_excepts[i])>=0) return true;
       }
@@ -763,7 +763,7 @@ if(window.globalThis==null) {
         if(!isExpects(element)) {
           var attrs = ["text"];
           if(element.hasAttribute("appres")) {
-            attrs = element.getAttribute("appres").split(/\s* |,\s/);
+            attrs = split(element.getAttribute("appres"));
           }
           
           var already = null;
@@ -966,7 +966,7 @@ if(window.globalThis==null) {
       if(name.startsWith(".")) {
         name = name.substring(1);
       }
-      var arr = element.className.split(" ");
+      var arr = split(element.className);
       if (arr.indexOf(name) == -1) {
         if(element.className!="") {
           element.className += " ";  
@@ -978,7 +978,7 @@ if(window.globalThis==null) {
       if(name.startsWith(".")) {
         name = name.substring(1);
       }
-      var arr = element.className.split(" ");
+      var arr = split(element.className);
       var index  = arr.indexOf(name);
       if(index>=0) {
         arr.splice(index, 1);
@@ -1229,6 +1229,12 @@ if(window.globalThis==null) {
             num = Number(num) + 1; 
             return typeof(args[num]) != undefined ? args[num] : match; 
         }); 
+    },
+    split = function (string, pattern) {
+      if(typeof string !== "string") return [];
+      return string.split(new RegExp((pattern ? pattern : '[ ,]'), 'g')).filter(function(item) {
+        return item !== null && item !== undefined && item !== '';
+      });
     },
     langsSelectorSmallButton = function (window, retry) {
       if(window==null) window = appWindow;
@@ -1652,6 +1658,11 @@ if(window.globalThis==null) {
     }
     return options;
   };
+
+  AppRes.prototype.appSplit = function (string, pattern) {
+    return split(string, pattern);
+  };
+
     
   AppRes.prototype.$$ = function (a, b, c) {
     if(a && typeof a === 'string') {
