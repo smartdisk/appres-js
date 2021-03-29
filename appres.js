@@ -1130,7 +1130,11 @@ if(window.globalThis==null) {
           if(selected) {
             setTimeout(function(){
               var items_div = getLangsSelector(window);
-              items_div.scrollTo(0, selected.offsetTop);
+              if(items_div.scrollTo) {
+                items_div.scrollTo(0, selected.offsetTop);
+              } else {
+                items_div.scrollTop = selected.offsetTop;
+              }
             }, 0);
           }  
         } else {
