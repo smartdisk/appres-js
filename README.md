@@ -1,2 +1,2 @@
-# The AppRes JavaScript & CSS v0.0.73
-License : LGPLv3
+# The AppRes JavaScript & CSS v0.0.74
+Support ES5

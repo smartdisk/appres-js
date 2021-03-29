@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.73
+ * AppRes JavaScript Library v0.0.74
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -7,7 +7,7 @@
  * https://appres.org/license
  *
  * Create Date: 2021.02.07 KST
- * Last Update: 2021.03.28 KST
+ * Last Update: 2021.03.29 KST
  */
 
 
@@ -624,10 +624,11 @@ if(window.globalThis==null) {
         adjust = 1 * adjust;
       }
       var elements = elementSelectAll(window, selector);
-      elements.forEach(function (element) {
+      for (var index = 0; index < elements.length; index++) {
+        var element = elements[index];
         element.style.height = "1px";
         element.style.height = (element.scrollHeight + adjust)+"px";  
-      });
+      }    
     },
     elementText = function (element, text) {
       if (text) {
@@ -1156,7 +1157,9 @@ if(window.globalThis==null) {
       var items_div = getLangsSelector(window);
       if(items_div) {
         var langs = Object.keys(window.APPRES.APPRES_LANGS);
-        langs.forEach(function (lang) {
+        var index;
+        for( index=0; index<langs.length; index++ ) {
+          var lang = langs[index];
           var lang_name = window.APPRES.APPRES_LANGS[lang];
           var lang_div = document.createElement('div');
           lang_div.id = lang;
@@ -1187,18 +1190,19 @@ if(window.globalThis==null) {
                     __html[0].setAttribute('lang', lang.substring(0,2));
                   }
                 }
-                appEvents.onTranslate.forEach(function (_onTranslate){
-                  _onTranslate(self, lang);
-                });
-                appEvents.onLanguageChange.forEach(function (_onLanguageChange){
-                  _onLanguageChange(self, lang);
-                });
+
+                for( var i2 = 0; i2 < appEvents.onTranslate.length; i2++ ) {
+                  appEvents.onTranslate[i2](self, lang);
+                }
+                for( var i3 = 0; i3 < appEvents.onLanguageChange.length; i3++ ) {
+                  appEvents.onLanguageChange[i3](self, lang);
+                }
               } else {
                 window.location.reload();
               }
             }
           }
-        });
+        };
       }
       return selected;
     },
@@ -1206,9 +1210,9 @@ if(window.globalThis==null) {
       var langs = getLangs(window);
       if(langs) {
         var _proced = false;
-        appEvents.onLangsSelector.forEach(function (_onLangsSelector) {
-          _proced = _onLangsSelector(self, langs, options.lang) || _proced;
-        });
+        for( var i4 = 0; i4 < appEvents.onLangsSelector.length; i4++ ) {
+          _proced = appEvents.onLangsSelector[i4](self, langs, options.lang) || _proced;
+        }
         if(_proced) return langs;
         
         var button = window.document.createElement("button");
@@ -1275,11 +1279,12 @@ if(window.globalThis==null) {
     },
     reset = function (window, sels) {
       var elements = (sels==null) ? elementSelectAll(window, ".appres") : elementSelectAll(window, ".appres " + sels);
-      elements.forEach(function (element) {
+      for( var i5 = 0; i5 < elements.length; i5++ ) {
+        var element = elements[i5];
         element.removeAttribute("appres-lang");
         element.removeAttribute("appres-key");
         element.removeAttribute("appres-already");
-      });
+      }
     },
     title_translate = function (window) {
       if(window.appres_title == null) {
@@ -1289,7 +1294,8 @@ if(window.globalThis==null) {
     },
     translate = function (window, sels) {
       var elements = (sels==null) ? elementSelectAll(window, ".appres") : elementSelectAll(window, ".appres " + sels);
-      elements.forEach(function (element) {
+      for( var i5 = 0; i5 < elements.length; i5++ ) {
+        var element = elements[i5];
         appTranslateAsync(window, element, 0, function (element, success, visible) {
           var appres_lang = elementAttr(element, "appres-lang");
           if(success && appres_lang==null) {
@@ -1302,19 +1308,19 @@ if(window.globalThis==null) {
             elementAttr(element, "appres-lang", options.lang);
           }
         });
-      })
+      }
     },
     hideTemporarily = function (window) {
       var elements = elementSelectAll(window, ".appres");
-      elements.forEach(function (element) {
-        element.setAttribute('style', 'visibility:hidden');
-      });
+      for( var i5 = 0; i5 < elements.length; i5++ ) {
+        elements[i5].setAttribute('style', 'visibility:hidden');
+      }
     },
     showTemporarily = function (window) {
       var elements = elementSelectAll(window, ".appres");
-      elements.forEach(function (element) {
-        element.setAttribute('style', 'visibility:visible');
-      });
+      for( var i5 = 0; i5 < elements.length; i5++ ) {
+        elements[i5].setAttribute('style', 'visibility:visible');
+      }
     },
     formatString = function (args) {
       args = arguments[0];
@@ -1419,9 +1425,9 @@ if(window.globalThis==null) {
           translate(window);
           if (options.title_trans) title_translate(window);
 
-          appEvents.onReady.forEach(function (_onReady){
-            _onReady(self, options.lang);
-          });
+          for( var i6 = 0; i6 < appEvents.onReady.length; i6++ ) {
+            appEvents.onReady[i6](self, options.lang);
+          }
 
           if(options.lang_attr==true) {
             var __html = elementSelectAll(window, 'html');
@@ -1430,9 +1436,9 @@ if(window.globalThis==null) {
             }
           }
 
-          appEvents.onTranslate.forEach(function (_onTranslate){
-            _onTranslate(self, options.lang);
-          });
+          for( var i7 = 0; i7 < appEvents.onTranslate.length; i7++ ) {
+            appEvents.onTranslate[i7](self, options.lang);
+          }
         }
       );
     },
@@ -1696,14 +1702,14 @@ if(window.globalThis==null) {
       }
       var elements = elementSelectAll(window, selector);
       if(style) {
-        elements.forEach(function (element) {
-          elementAttr(element, 'style', style);
-        });
+        for( var i5 = 0; i5 < elements.length; i5++ ) {
+          elementAttr(elements[i5], 'style', style);
+        }
       }
       var styles = [];
-      elements.forEach(function (element) {
-        styles.push(elementAttr(element, 'style'));
-      });
+      for( var i5 = 0; i5 < elements.length; i5++ ) {
+        styles.push(elementAttr(elements[i5], 'style'));
+      }
       return styles;
     }
   };
@@ -1718,9 +1724,9 @@ if(window.globalThis==null) {
         window = appWindow;
       }
       var elements = elementSelectAll(window, selector);
-      elements.forEach(function (element) {
-        removeClassName(element, name);
-      });
+      for( var i5 = 0; i5 < elements.length; i5++ ) {
+        removeClassName(elements[i5], name);
+      }
     }
   };
   AppRes.prototype.appAddClass = function (window, selector, name) {
@@ -1733,9 +1739,9 @@ if(window.globalThis==null) {
         window = appWindow;
       }
       var elements = elementSelectAll(window, selector);
-      elements.forEach(function (element) {
-        addClassName(element, name);
-      });  
+      for( var i5 = 0; i5 < elements.length; i5++ ) {
+        addClassName(elements[i5], name);
+      } 
     }
   };
 
