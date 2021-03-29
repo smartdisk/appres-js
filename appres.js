@@ -1,5 +1,5 @@
 /*!
- * AppRes JavaScript Library v0.0.74
+ * AppRes JavaScript Library v0.0.75
  * https://appres.org/
  *
  * Copyright 2021 APPRES.ORG and other contributors
@@ -514,7 +514,11 @@ if(window.globalThis==null) {
       script.type = 'text/javascript';
       // use onreadystatechange in IE
       script.onload = function () {
-        if (onload) onload(window, script);
+        if (onload) {
+          setTimeout(function() {
+            onload(window, script);
+          },0);
+        }
       };
       script.src = url;
       return script;
