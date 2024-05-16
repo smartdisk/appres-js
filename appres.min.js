@@ -1,5 +1,5 @@
 /*!
- * AppRES JavaScript Library v0.0.95
+ * AppRES JavaScript Library v0.0.96
  * https://appres.org/
  *
  * Copyright 2024 APPRES.ORG and other contributors
