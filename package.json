@@ -1,0 +1,29 @@
+{
+	"name": "appres-js",
+	"version": "0.0.96",
+	"description": "App Resource Organization",
+	"keywords": [
+	  "app",
+	  "appres",
+	  "app resource",
+	  "resource",
+	  "resource manager",
+	  "resource organization",
+	  "strings",
+	  "images",
+	  "icons"
+	],
+	"author": "appres.org",
+	"license": "GPL-3.0",
+	"dependencies": {
+	},
+	"repository": {
+	  "type": "git",
+	  "url": "git+https://github.com/smartdisk/appres-js.git"
+	},
+	"bugs": {
+	  "url": "https://github.com/smartdisk/appres-js/issues"
+	},
+	"homepage": "https://appres.org"
+  }
+  
