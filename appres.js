@@ -1,5 +1,5 @@
 /*!
- * AppRES JavaScript Library v0.0.96
+ * AppRES JavaScript Library v0.0.97
  * https://appres.org/
  *
  * Copyright 2024 APPRES.ORG and other contributors
@@ -11,6 +11,7 @@
  * Last Update: 2024.04.02 KST , placeholder
  * Last Update: 2024.04.16 KST , HIDE, isReady, getLangs, updateLang, element text trim, currentURL, onLanguageChange
  * Last Update: 2024.05.03 KST , init
+ * Last Update: 2024.06.03 KST , updateLangButton
 */
 
 
@@ -1736,6 +1737,11 @@ if(window.globalThis==null) {
     elementText(langButton, lang_name);
 
     onLanguageChange(self, options.lang);
+  };
+  AppRes.prototype.updateLangButton = function () {
+    const langButton = getLangsButton(window);
+    var lang_name = window.APPRES.APPRES_LANGS[options.lang];
+    elementText(langButton, lang_name);
   };
     
 
