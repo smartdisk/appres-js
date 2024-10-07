@@ -1,6 +1,6 @@
 {
 	"name": "appres-js",
-	"version": "0.0.97",
+	"version": "0.0.99",
 	"description": "App Resource Organization",
 	"keywords": [
 	  "app",
@@ -13,7 +13,7 @@
 	  "images",
 	  "icons"
 	],
-	"author": "appres.org",
+	"author": "Certchip",
 	"license": "GPL-3.0",
 	"dependencies": {
 	},

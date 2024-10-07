@@ -1,8 +1,8 @@
 /*!
- * AppRES JavaScript Library v0.0.97
+ * AppRES JavaScript Library v0.0.99
  * https://appres.org/
  *
- * Copyright 2024 APPRES.ORG and other contributors
+ * Copyright 2024 Certchip and other contributors
  * Released under the LGPLv3 license
  * https://appres.org/license
  *
@@ -11,9 +11,14 @@
  * Last Update: 2024.04.02 KST , placeholder
  * Last Update: 2024.04.16 KST , HIDE, isReady, getLangs, updateLang, element text trim, currentURL, onLanguageChange
  * Last Update: 2024.05.03 KST , init
+ * v0.0.97
  * Last Update: 2024.06.03 KST , updateLangButton
+ * v0.0.98
+ * Last Update: 2024.10.08 KST , getSystemLang
+ * 
+ * Minifier
+ * https://www.toptal.com/developers/javascript-minifier
 */
-
 
 if(window.globalThis==null) {
   window.globalThis = window;
@@ -1181,7 +1186,8 @@ if(window.globalThis==null) {
     element.className = "";
   },    
   getSystemLang = function (window) {
-    return window.navigator.language || window.navigator.userLanguage; 
+    const lang = window.navigator.language || window.navigator.userLanguage;
+    return lang.length === 2 && window.navigator.languages ? window.navigator.languages[0] : lang;
   },
   getElementStyleDisplay = function (window, element) {
     return element.currentStyle ? element.currentStyle.display : window.getComputedStyle(element, null).display;
