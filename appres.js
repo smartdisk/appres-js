@@ -1,5 +1,5 @@
 /*!
- * AppRES JavaScript Library v0.0.99
+ * AppRES JavaScript Library v0.1.0
  * https://appres.org/
  *
  * Copyright 2024 Certchip and other contributors
@@ -13,7 +13,7 @@
  * Last Update: 2024.05.03 KST , init
  * v0.0.97
  * Last Update: 2024.06.03 KST , updateLangButton
- * v0.0.98
+ * v0.1.00
  * Last Update: 2024.10.08 KST , getSystemLang
  * 
  * Minifier
@@ -1424,15 +1424,12 @@ if(window.globalThis==null) {
 
       var lang = window.APPRES.APPRES_LANGS[options.lang];
       if(!lang) {
-        options.lang = getSystemLang(window);
-        lang = window.APPRES.APPRES_LANGS[options.lang];
+        lang = window.APPRES.APPRES_LANGS[getSystemLang(window)];
       }
       if(!lang) {
-        options.lang = "en-US";
-        lang = window.APPRES.APPRES_LANGS[options.lang];
+        lang = window.APPRES.APPRES_LANGS["en-US"];
         if(!lang) {
-          options.lang = Object.keys(window.APPRES.APPRES_LANGS)[0];
-          lang = window.APPRES.APPRES_LANGS[options.lang];
+          lang = window.APPRES.APPRES_LANGS[Object.keys(window.APPRES.APPRES_LANGS)[0]];
         }
       }          
       if(options.langs_selector.style.button=="auto" && lang) {
