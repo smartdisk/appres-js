@@ -1,5 +1,5 @@
 /*!
- * AppRES JavaScript Library v0.1.0
+ * AppRES JavaScript Library v0.1.1
  * https://appres.org/
  *
  * Copyright 2024 Certchip and other contributors
@@ -1102,6 +1102,35 @@ if(window.globalThis==null) {
       }
     }
   },
+  getLocalStorageUsage = function () {
+    let total = 0;
+  
+    // localStorage의 모든 항목을 순회하며 사용량을 계산
+    for (let key in window.localStorage) {
+      if (localStorage.hasOwnProperty(key)) {
+        // 키와 값의 길이를 더하여 총 바이트 수 계산
+        total += ((localStorage[key].length + key.length) * 2); // UTF-16에서 각 문자는 2바이트
+      }
+    }
+  
+    return total; // 바이트 단위 사용량 반환
+  },
+  getLocalStorageKeys = function () {
+    let keys = [];
+    for (let key in window.localStorage) {
+      keys.push(key);
+    }
+    return keys;
+  },
+  getLocalStorageValue = function (key) {
+    return window.localStorage.getItem(key);
+  },
+  removeLocalStorageKey = function (key) {
+    window.localStorage.removeItem(key);
+  },
+  clearLocalStorage = function () {
+    window.localStorage.clear();
+  },
   setItem = function (window, k, v) {
     var deno = 0, i, j;
     while (1) {
@@ -1197,6 +1226,8 @@ if(window.globalThis==null) {
   },
   setLang = function (lang) {
     options.lang = lang;
+    setItem(window, "appres.lang", options.lang);
+    return getLang();
   },
   getLangs = function (window) {
     var appres_langs = elementSelectAll(window, options.langs_selector.langs);
@@ -1349,6 +1380,7 @@ if(window.globalThis==null) {
                     __html[0].setAttribute('lang', lang.substring(0,2));
                   }
                 }  
+
                 onLanguageChange(self, lang);
               }                
             } else {
@@ -1628,7 +1660,7 @@ if(window.globalThis==null) {
     );
   },
   self = null;
-    
+
   var appWindow = window;
   var AppRes = function (window, _options, _appEvents) {
     appWindow = window;
@@ -1727,6 +1759,25 @@ if(window.globalThis==null) {
     if(lang) setLang(lang);
     return getLang();
   };
+
+  AppRes.prototype.getLocalStorageUsage = function () {
+    return getLocalStorageUsage();
+  };
+  AppRes.prototype.getLocalStorageKeys = function () {
+    return getLocalStorageKeys();
+  };
+  AppRes.prototype.getLocalStorageValue = function (key) {
+    return getLocalStorageValue(key);
+  };
+  AppRes.prototype.removeLocalStorageKey = function (key) {
+    removeLocalStorageKey(key);
+  };
+  AppRes.prototype.clearLocalStorage = function () {
+    clearLocalStorage();
+  };
+  
+  
+  
 
   AppRes.prototype.setLang = function (lang) {
     return setLang(lang);
