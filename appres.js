@@ -1,5 +1,5 @@
 /*!
- * AppRES JavaScript Library v0.1.1
+ * AppRES JavaScript Library v0.1.2
  * https://appres.org/
  *
  * Copyright 2024 Certchip and other contributors
@@ -13,8 +13,10 @@
  * Last Update: 2024.05.03 KST , init
  * v0.0.97
  * Last Update: 2024.06.03 KST , updateLangButton
- * v0.1.00
+ * v0.1.0
  * Last Update: 2024.10.08 KST , getSystemLang
+ * v0.1.2
+ * Last Update: 2024.10.13 KST , chkLang
  * 
  * Minifier
  * https://www.toptal.com/developers/javascript-minifier
@@ -1214,8 +1216,28 @@ if(window.globalThis==null) {
   clearClassName = function (element) {
     element.className = "";
   },    
+  chkLang = function(lang) {
+    switch (lang) {
+        case "ko":
+          lang = "ko-KR";
+          break;
+        case "en":
+          lang = "en-US";
+          break;
+        case "ja":
+          lang = "ja-JP";
+          break;
+        case "fr":
+          lang = "fr-FR";
+          break;
+        default:                
+          break;
+    }
+    return lang;
+  },
   getSystemLang = function (window) {
-    const lang = window.navigator.language || window.navigator.userLanguage;
+    let lang = window.navigator.language || window.navigator.userLanguage;
+    lang = chkLang(lang);
     return lang.length === 2 && window.navigator.languages ? window.navigator.languages[0] : lang;
   },
   getElementStyleDisplay = function (window, element) {
